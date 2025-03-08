@@ -12,8 +12,8 @@ function App() {
   useEffect(() => {
     fetchVentas();
     fetchNumeroPedidos();
-    const socket = io(`http://${process.env.REACT_APP_URL_PRODUCCION}`); // Asegúrate de que el backend está en este puerto
-
+    const socket = io(`ws://${process.env.REACT_APP_URL_PRODUCCION}`); // Asegúrate de que el backend está en este puerto
+ 
     socket.on("connect", () => {
       console.log("✅ Conectado a WebSocket");
     });
