@@ -37,7 +37,7 @@ function App() {
   // Función para obtener los datos de ventas desde el backend
   const fetchVentas = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_URL_PRODUCCION}/ventas`);
+      const response = await fetch(`http://${process.env.REACT_APP_URL_PRODUCCION}/api/ventas`);
       const data = await response.json();
       console.log("📤 Ventas:", data);
       setVentas(data);
@@ -49,7 +49,7 @@ function App() {
   // Función para obtener los datos de numero de pedidos desde el backend
   const fetchNumeroPedidos = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_URL_PRODUCCION}/numero-pedidos`);
+      const response = await fetch(`http://${process.env.REACT_APP_URL_PRODUCCION}/api/numero-pedidos`);
       const data = await response.json();
       console.log("📤 Numero Pedidos:", data);
       setNumeroPedido(data);
