@@ -16,13 +16,6 @@ function App() {
       transports: ["websocket"]
     });
     
-    socket.on("connect", () => console.log("✅ Conectado al WebSocket"));
-    //socket.on("db_change", (data) => console.log("📩 Cambio detectado en la DB:", data));
-    //socket.on("db_status", (status) => console.log("📢 Estado de la DB:", status));
-    socket.on("disconnect", () => console.log("🔴 WebSocket desconectado"));
-    socket.on("connect_error", (err) => console.error("❌ Error en la conexión:", err));
-    
-
     socket.on("connect", () => {
       console.log("✅ Conectado a WebSocket");
     });
@@ -37,6 +30,9 @@ function App() {
     socket.on("db_status", (status) => {
       console.log("📢 Estado de la DB:", status);
     });
+
+    socket.on("disconnect", () => console.log("🔴 WebSocket desconectado"));
+    socket.on("connect_error", (err) => console.error("❌ Error en la conexión:", err));
 
     return () => {
       socket.disconnect();

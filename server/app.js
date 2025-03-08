@@ -62,8 +62,6 @@ async function setupWebSocket() {
       if (change.operationType === "insert") {
         // Solo procesar inserts
         const doc = change.fullDocument; // El documento insertado
-        console.log("Nuevo insert:", doc);
-
         // Extraer la información solicitada
         const info = {
           tipo_pedido:
