@@ -12,8 +12,17 @@ function App() {
   useEffect(() => {
     fetchVentas();
     fetchNumeroPedidos();
-    const socket = io(`ws://${process.env.REACT_APP_URL_PRODUCCION}`); // Asegúrate de que el backend está en este puerto
- 
+    const socket = io(`ws://${process.env.REACT_APP_URL_PRODUCCION}`, {
+      transports: ["websocket"]
+    });
+    
+    socket.on("connect", () => console.log("✅ Conectado al WebSocket"));
+    //socket.on("db_change", (data) => console.log("📩 Cambio detectado en la DB:", data));
+    //socket.on("db_status", (status) => console.log("📢 Estado de la DB:", status));
+    socket.on("disconnect", () => console.log("🔴 WebSocket desconectado"));
+    socket.on("connect_error", (err) => console.error("❌ Error en la conexión:", err));
+    
+
     socket.on("connect", () => {
       console.log("✅ Conectado a WebSocket");
     });
@@ -37,7 +46,9 @@ function App() {
   // Función para obtener los datos de ventas desde el backend
   const fetchVentas = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_URL_PRODUCCION}/api/ventas`);
+      const response = await fetch(
+        `http://${process.env.REACT_APP_URL_PRODUCCION}/api/ventas`
+      );
       const data = await response.json();
       console.log("📤 Ventas:", data);
       setVentas(data);
@@ -49,7 +60,9 @@ function App() {
   // Función para obtener los datos de numero de pedidos desde el backend
   const fetchNumeroPedidos = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_URL_PRODUCCION}/api/numero-pedidos`);
+      const response = await fetch(
+        `http://${process.env.REACT_APP_URL_PRODUCCION}/api/numero-pedidos`
+      );
       const data = await response.json();
       console.log("📤 Numero Pedidos:", data);
       setNumeroPedido(data);
