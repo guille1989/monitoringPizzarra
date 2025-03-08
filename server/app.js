@@ -64,6 +64,9 @@ async function setupWebSocket() {
         const doc = change.fullDocument; // El documento insertado
         // Extraer la información solicitada
         const info = {
+          local: Array.isArray(doc.aux) && doc.aux.length > 0
+            ? doc.aux[0].local
+            : "No definido",
           tipo_pedido:
             Array.isArray(doc.aux) && doc.aux.length > 0
               ? doc.aux[0].tipo_pedido

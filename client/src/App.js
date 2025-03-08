@@ -13,9 +13,9 @@ function App() {
     fetchVentas();
     fetchNumeroPedidos();
     const socket = io(`ws://${process.env.REACT_APP_URL_PRODUCCION}`, {
-      transports: ["websocket"]
+      transports: ["websocket"],
     });
-    
+
     socket.on("connect", () => {
       console.log("✅ Conectado a WebSocket");
     });
@@ -32,7 +32,9 @@ function App() {
     });
 
     socket.on("disconnect", () => console.log("🔴 WebSocket desconectado"));
-    socket.on("connect_error", (err) => console.error("❌ Error en la conexión:", err));
+    socket.on("connect_error", (err) =>
+      console.error("❌ Error en la conexión:", err)
+    );
 
     return () => {
       socket.disconnect();
@@ -87,40 +89,46 @@ function App() {
         <div className="box">
           <div className="box_ventas">
             <div>
+              <div>{numeroPedido[0] ? numeroPedido[0].local : "-"}</div>
+            </div>
+            <div>
               <div className="box_venatas_text">Numero de pedidos:</div>
-              <div>{numeroPedido[0] ? numeroPedido[0].total_pedidos : ""}</div>
+              <div>{numeroPedido[0] ? numeroPedido[0].total_pedidos : 0}</div>
             </div>
             <div>
               <div className="box_venatas_text">Ventas Totales:</div>
               <div>
-                {ventas[0] ? formatCurrency(ventas[0].total_ventas) : ""}
+                {ventas[0] ? formatCurrency(ventas[0].total_ventas) : 0}
               </div>
             </div>
           </div>
           <div className="box_ventas_gauge">
             <VentasGauge
               valor={ventas[0] ? ventas[0].total_ventas : 0}
-              maxValor={800000}
+              maxValor={2500000}
             />
           </div>
         </div>
         <div className="box">
           <div className="box_ventas">
             <div>
+              <div>{numeroPedido[1] ? numeroPedido[0].local : "-"}</div>
+            </div>
+            <div>
               <div className="box_venatas_text">Numero de pedidos:</div>
-              <div>{numeroPedido[1] ? numeroPedido[1].total_pedidos : ""}</div>
+              <div>{numeroPedido[1] ? numeroPedido[1].total_pedidos : 0}</div>
             </div>
             <div>
               <div className="box_venatas_text">Ventas Totales:</div>
               <div>
-                {ventas[1] ? formatCurrency(ventas[1].total_ventas) : ""}
+                {ventas[1] ? formatCurrency(ventas[1].total_ventas) : 0}
               </div>
             </div>
           </div>
           <div className="box_ventas_gauge">
             <VentasGauge
               valor={ventas[1] ? ventas[1].total_ventas : 0}
-              maxValor={2500000}
+              maxValor={800000}
             />
           </div>
         </div>
