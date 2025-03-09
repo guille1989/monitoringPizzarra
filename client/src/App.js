@@ -112,7 +112,7 @@ function App() {
         <div className="box">
           <div className="box_ventas">
             <div>
-              <div className="box_venatas_text">{numeroPedido[1] ? numeroPedido[0]._id : "-"}</div>
+              <div className="box_venatas_text">{numeroPedido[1] ? numeroPedido[1]._id : "-"}</div>
             </div>
             <div>
               <div className="box_venatas_text">Numero de pedidos:</div>
