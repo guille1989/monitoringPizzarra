@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import VentasGauge from "./components/ventas_gauge";
 
+import SalesBox from "./components/ventas_box_main";
+
 function App() {
   const [dbChange, setDbChange] = useState(null);
   const [ventas, setVentas] = useState([]);
@@ -85,53 +87,18 @@ function App() {
         <img src={logo} alt="Logo" className="logo" />
       </>
       <div className="container">
-        {/* Elemento arriba del .box */}
-        <div className="box">
-          <div className="box_ventas">
-            <div>
-              <div className="box_venatas_text">{numeroPedido[0] ? numeroPedido[0]._id : "-"}</div>
-            </div>
-            <div>
-              <div className="box_venatas_text">Numero de pedidos:</div>
-              <div>{numeroPedido[0] ? numeroPedido[0].total_pedidos : 0}</div>
-            </div>
-            <div>
-              <div className="box_venatas_text">Ventas Totales:</div>
-              <div>
-                {ventas[0] ? formatCurrency(ventas[0].total_ventas) : 0}
-              </div>
-            </div>
-          </div>
-          <div className="box_ventas_gauge">
-            <VentasGauge
-              valor={ventas[0] ? ventas[0].total_ventas : 0}
-              maxValor={2500000}
-            />
-          </div>
-        </div>
-        <div className="box">
-          <div className="box_ventas">
-            <div>
-              <div className="box_venatas_text">{numeroPedido[1] ? numeroPedido[1]._id : "-"}</div>
-            </div>
-            <div>
-              <div className="box_venatas_text">Numero de pedidos:</div>
-              <div>{numeroPedido[1] ? numeroPedido[1].total_pedidos : 0}</div>
-            </div>
-            <div>
-              <div className="box_venatas_text">Ventas Totales:</div>
-              <div>
-                {ventas[1] ? formatCurrency(ventas[1].total_ventas) : 0}
-              </div>
-            </div>
-          </div>
-          <div className="box_ventas_gauge">
-            <VentasGauge
-              valor={ventas[1] ? ventas[1].total_ventas : 0}
-              maxValor={800000}
-            />
-          </div>
-        </div>
+        {[
+          { pedido: numeroPedido[0], venta: ventas[0], maxValor: 2500000 },
+          { pedido: numeroPedido[1], venta: ventas[1], maxValor: 800000 }
+        ].map((item, index) => (
+          <SalesBox
+            key={index}
+            pedido={item.pedido}
+            venta={item.venta}
+            maxValor={item.maxValor}
+            currencyFormat={formatCurrency} // Pasa tu función formatCurrency si es necesario
+          />
+        ))}
       </div>
     </div>
   );

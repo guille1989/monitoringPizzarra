@@ -13,6 +13,7 @@ const VentasGauge = ({ valor, maxValor }) => {
       type="semicircle"
       pointer={{ type: "needle", elastic: true, color: "#1f293d" }}
       arc={{
+        
         width: 0.3,
         subArcs: [
           { limit: 50, color: "#EA4228" }, // $160K
