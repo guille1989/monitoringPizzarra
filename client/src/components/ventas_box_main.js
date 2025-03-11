@@ -1,8 +1,18 @@
 // SalesBox.jsx
 import React from "react";
 import VentasGauge from "./ventas_gauge"; // Asegúrate de importar VentasGauge desde su ubicación correcta
+import Switch from "@mui/material/Switch";
+import { useState } from "react";
 
-const SalesBox = ({ pedido, venta, maxValor, title }) => {
+const SalesBox = ({ local, ventas, numeroPedidos, maxValor, title }) => {
+  const [periodo, setPeriodo] = useState("ventasDia"); // Estado inicial: "mes"
+
+  const handleSelectPeriodo = (event) => {
+    const nuevoPeriodo = event.target.checked ? "dia" : "mes";
+    setPeriodo(nuevoPeriodo);
+    return nuevoPeriodo; // Si necesitas retornarlo para otra lógica
+  };
+
   // Función para formatear el valor como dinero
   const formatCurrency = (value) => {
     return value.toLocaleString("es-CO", {
@@ -13,37 +23,48 @@ const SalesBox = ({ pedido, venta, maxValor, title }) => {
     });
   };
 
-  console.log(pedido);
+  const label = { inputProps: { "aria-label": "Switch demo" } };
 
   return (
     <div>
       <div className="box_title_main">
-        {title || (pedido ? pedido._id : "-")}
+        <div style={{ width: "70%" }}>{title || (local ? local : "-")}</div>
+
+        <div className="select_mes_dia">
+          <div>Mes</div>
+          <Switch
+            {...label}
+            checked={periodo === "ventasDia"} // Controla el estado del Switch
+            onChange={handleSelectPeriodo}
+            color="default"
+          />
+          <div>dia</div>
+        </div>
       </div>
 
       <div className="box">
         <div className="box_ventas">
           <div>
             <div className="box_venatas_text">Numero de pedidos:</div>
-            <div>{pedido ? pedido.total_pedidos : 0}</div>
+            <div>{numeroPedidos ? numeroPedidos : 0}</div>
           </div>
           <div>
             <div className="box_venatas_text">Ticket medio:</div>
             <div>
-              {venta && pedido
-                ? formatCurrency(venta.total_ventas / pedido.total_pedidos)
+              {ventas && numeroPedidos
+                ? formatCurrency(ventas / numeroPedidos)
                 : 0}
             </div>
           </div>
           <div>
             <div className="box_venatas_text">Ventas Totales:</div>
-            <div>{venta ? formatCurrency(venta.total_ventas) : 0}</div>
+            <div>{ventas ? formatCurrency(ventas) : 0}</div>
           </div>
         </div>
         <div className="box_ventas_gauge">
           <VentasGauge
-            valor={venta ? venta.total_ventas : 0}
-            maxValor={maxValor}
+            valor={ventas ? ventas : 0}
+            maxValor={local === "Popayan-Centro" ? 2500000 : 1000000}
           />
         </div>
       </div>
