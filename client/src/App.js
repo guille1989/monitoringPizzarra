@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import Switch from "@mui/material/Switch";
 import moment from "moment-timezone";
+import "moment/locale/es";
 
 import SalesBox from "./components/ventas_component/ventas_box_main";
 
@@ -12,12 +13,21 @@ function App() {
   const [ventas, setVentas] = useState([]);
   const [numeroPedido, setNumeroPedido] = useState(0);
   const [periodo, setPeriodo] = useState("ventasDia"); // Estado inicial: "mes"
+  const [fechaHoy, setFechaHoy] = useState(
+    moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
+  );
 
   const handleSelectPeriodo = (event) => {
     const nuevoPeriodo = event.target.checked ? "ventasDia" : "ventasMes";
+    const fechaTitulos =
+      nuevoPeriodo === "ventasDia"
+        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
+        : moment().locale("es").tz("America/Bogota").format("MMMM, MM-YYYY");
+
     console.log("🔄 Cambiando periodo a:", nuevoPeriodo);
     fetchVentas(nuevoPeriodo);
     setPeriodo(nuevoPeriodo);
+    setFechaHoy(fechaTitulos);
     return nuevoPeriodo; // Si necesitas retornarlo para otra lógica
   };
 
@@ -78,7 +88,7 @@ function App() {
         <img src={logo} alt="Logo" className="logo" />
         <div className="fecha_hoy_inicio_container">
           {/*Fecha hoy*/}
-          <h2 className="fecha_hoy_inicio">{moment().tz("America/Bogota").format("YYYY-MM-DD")}</h2>
+          <h2 className="fecha_hoy_inicio">{fechaHoy}</h2>
         </div>
         <div className="select_mes_dia">
           <div>Mes</div>
@@ -101,7 +111,6 @@ function App() {
             numeroPedidos={item.total_pedidos}
             maxValor={item.objetivo_ventas} // Puedes cambiar este valor si es necesario
             currencyFormat={formatCurrency} // Pasa tu función formatCurrency si es necesario
-            fetchVentasTrigger={fetchVentas}
           />
         ))}
       </div>

@@ -8,8 +8,7 @@ const SalesBox = ({
   ventas,
   numeroPedidos,
   maxValor,
-  title,
-  fetchVentasTrigger,
+  title
 }) => {
   // Función para formatear el valor como dinero
   const formatCurrency = (value) => {
