@@ -1,19 +1,23 @@
-import React from "react";
-import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
+import React, { useEffect } from "react";
 import GaugeComponent from "react-gauge-component";
 
 const VentasGauge = ({ valor, maxValor }) => {
-  const maxMoney = maxValor; // $800K como valor máximo
-  const scaleFactor = maxMoney / 100; // Cada unidad del gauge = $8,000
+
+  const scaleFactor = maxValor / 100; // Cada unidad del gauge = $8,000
   const moneyValue = valor; // Valor actual en dinero ($600K)
   const gaugeValue = moneyValue / scaleFactor; // Convertir a escala del gauge (75)
 
+  // No renderizar el gauge si maxValorg es 0
+  if (maxValor === 0) {
+    return <div>Cargando...</div>; // O un spinner, o nada
+  }
+
   return (
     <GaugeComponent
+      key={maxValor}
       type="semicircle"
       pointer={{ type: "needle", elastic: true, color: "#1f293d" }}
       arc={{
-        
         width: 0.3,
         subArcs: [
           { limit: 50, color: "#EA4228" }, // $160K

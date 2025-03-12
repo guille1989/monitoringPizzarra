@@ -4,6 +4,7 @@ const mongose = require("mongoose");
 const http = require("http");
 const cors = require("cors"); // Importa CORS
 const { Server } = require("socket.io");
+const bodyParser = require("body-parser");
 
 const app = express();
 const server = http.createServer(app);
@@ -31,7 +32,9 @@ mongose
 
 mongose.set("strictQuery", true);
 //*************************
-
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(bodyParser.json());
 app.use(cors()); // Habilita CORS para todas las rutas
 
 async function connectToDatabase() {

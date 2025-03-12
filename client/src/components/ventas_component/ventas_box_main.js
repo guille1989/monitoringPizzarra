@@ -1,18 +1,16 @@
 // SalesBox.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import VentasGauge from "./ventas_gauge"; // Asegúrate de importar VentasGauge desde su ubicación correcta
 import Switch from "@mui/material/Switch";
-import { useState } from "react";
 
-const SalesBox = ({ local, ventas, numeroPedidos, maxValor, title }) => {
-  const [periodo, setPeriodo] = useState("ventasDia"); // Estado inicial: "mes"
-
-  const handleSelectPeriodo = (event) => {
-    const nuevoPeriodo = event.target.checked ? "dia" : "mes";
-    setPeriodo(nuevoPeriodo);
-    return nuevoPeriodo; // Si necesitas retornarlo para otra lógica
-  };
-
+const SalesBox = ({
+  local,
+  ventas,
+  numeroPedidos,
+  maxValor,
+  title,
+  fetchVentasTrigger,
+}) => {
   // Función para formatear el valor como dinero
   const formatCurrency = (value) => {
     return value.toLocaleString("es-CO", {
@@ -23,23 +21,10 @@ const SalesBox = ({ local, ventas, numeroPedidos, maxValor, title }) => {
     });
   };
 
-  const label = { inputProps: { "aria-label": "Switch demo" } };
-
   return (
     <div>
       <div className="box_title_main">
         <div style={{ width: "70%" }}>{title || (local ? local : "-")}</div>
-
-        <div className="select_mes_dia">
-          <div>Mes</div>
-          <Switch
-            {...label}
-            checked={periodo === "ventasDia"} // Controla el estado del Switch
-            onChange={handleSelectPeriodo}
-            color="default"
-          />
-          <div>dia</div>
-        </div>
       </div>
 
       <div className="box">
@@ -62,10 +47,7 @@ const SalesBox = ({ local, ventas, numeroPedidos, maxValor, title }) => {
           </div>
         </div>
         <div className="box_ventas_gauge">
-          <VentasGauge
-            valor={ventas ? ventas : 0}
-            maxValor={local === "Popayan-Centro" ? 2500000 : 1000000}
-          />
+          <VentasGauge valor={ventas ? ventas : 0} maxValor={maxValor} />
         </div>
       </div>
     </div>
