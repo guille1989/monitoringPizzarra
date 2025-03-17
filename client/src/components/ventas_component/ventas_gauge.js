@@ -20,9 +20,9 @@ const VentasGauge = ({ valor, maxValor }) => {
       arc={{
         width: 0.3,
         subArcs: [
-          { limit: 50, color: "#EA4228" }, // $160K
-          { limit: 80, color: "#F5CD19" }, // $400K
-          { limit: 100, color: "#5BE12C" }, // $800K
+          { limit: 50, color: "#EA4228" },
+          { limit: 80, color: "#F5CD19" },
+          { limit: 100, color: "#5BE12C" },
         ],
       }}
       value={gaugeValue} // Valor en escala del gauge (75 = $600K)

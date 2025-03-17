@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import VentasGauge from "./ventas_gauge"; // Asegúrate de importar VentasGauge desde su ubicación correcta
 import Switch from "@mui/material/Switch";
+import Divider from '@mui/material/Divider';
+
 
 const SalesBox = ({
   local,
@@ -49,6 +51,7 @@ const SalesBox = ({
           <VentasGauge valor={ventas ? ventas : 0} maxValor={maxValor} />
         </div>
       </div>
+      <Divider/>
     </div>
   );
 };

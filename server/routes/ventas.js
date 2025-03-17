@@ -6,14 +6,14 @@ const moment = require("moment-timezone");
 const pedidos_model = require("../models/pedidos_model");
 
 // Ruta GET para ejecutar la agregación
-rute.get("/ventas/:periodo", async (req, res) => {
+rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
   let periodo = req.params.periodo;
+  let finicio = req.params.finicio;
+  let ffin = req.params.ffin;
+
   try {
     const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD");
-    const hoy = moment(); // Fecha actual
-    const inicioMes = hoy.clone().startOf("month").format("YYYY-MM-DD"); // Inicio del mes como string
-    const finMes = hoy.clone().endOf("month").format("YYYY-MM-DD"); // Fin del mes como string
-
+  
     // Pipeline para obtener las ventas del día y del mes
     const pipelineVentasMes = [
       {
@@ -22,8 +22,8 @@ rute.get("/ventas/:periodo", async (req, res) => {
       {
         $match: {
           $and: [
-            { "aux.fecha_pedido": { $gte: inicioMes } },
-            { "aux.fecha_pedido": { $lte: finMes } },
+            { "aux.fecha_pedido": { $gte: finicio } },
+            { "aux.fecha_pedido": { $lte: ffin } },
           ],
         },
       },
