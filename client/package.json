@@ -17,6 +17,7 @@
     "react-date-range": "^1.4.0",
     "react-dom": "^19.0.0",
     "react-gauge-component": "^1.2.64",
+    "react-google-charts": "^5.2.1",
     "react-modal": "^3.16.3",
     "react-scripts": "5.0.1",
     "rsuite": "^5.78.1",

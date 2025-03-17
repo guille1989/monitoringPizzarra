@@ -78,6 +78,7 @@ body, html {
 
 .box_ventas {
   height: 100%;
+  width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -202,4 +203,82 @@ body, html {
   width: 35px; /* Reduce el tamaño de los días */
   height: 35px;
   line-height: 35px;
+}
+
+
+/* DateHeader.css */
+.header-container {
+  background-color: #1a2a44; /* Fondo oscuro */
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.logo-section {
+  margin-bottom: 15px;
+}
+
+.logo {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo span {
+  color: #c5efec; /* Color del triángulo en el logo, ajusta según necesites */
+}
+
+.slogan {
+  font-size: 16px;
+  color: #cccccc;
+  margin: 5px 0 0;
+}
+
+.date-section {
+  width: 80%;
+  background-color: #353d54; /* Fondo sutil para la sección de fecha */
+  border-radius: 8px;
+  padding: 20px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-info {
+  font-size: 14px;
+  color: #ffffff; /* Texto blanco para mejor contraste */
+  display: flex;
+  gap: 5px;
+}
+
+.date-info span {
+  display: inline-block;
+}
+
+.view-selector {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+}
+
+.selector-btn {
+  padding: 5px 15px;
+  border: none;
+  background: none;
+  color: #cccccc;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.selector-btn.active {
+  background-color: #59b2b0;
+  color: #ffffff;
+}
+
+.selector-btn:hover {
+  color: #ffffff;
 }

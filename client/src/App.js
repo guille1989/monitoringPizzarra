@@ -16,6 +16,7 @@ import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
+import BottomNav from "./components/nav_component/menu_navegacion";
 import SalesBox from "./components/ventas_component/ventas_box_main";
 
 const style = {
@@ -36,6 +37,8 @@ Modal.setAppElement("#root");
 function App() {
   const [dbChange, setDbChange] = useState(null);
   const [ventas, setVentas] = useState([]);
+  const [ventasAtas, setVentasAtras] = useState([]);
+  
   const [numeroPedido, setNumeroPedido] = useState(0);
   const [periodo, setPeriodo] = useState("ventasDia"); // Estado inicial: "mes"
   const [fechaHoy, setFechaHoy] = useState(
@@ -45,6 +48,8 @@ function App() {
   const [isSwitchOn, setIsSwitchOn] = useState(false); // Estado del Switch
   const [selectedOption, setSelectedOption] = useState("Ventas");
   const [open, setOpen] = useState(false);
+  const [viewMode, setViewMode] = useState("ventasDia");
+
   const openModal = () => {
     if (isSwitchOn) {
       // Solo abre si el Switch está activado
@@ -52,15 +57,16 @@ function App() {
     }
   };
   const closeModal = () => {
-    const fechaTitulos = moment(rangeInicio)
-            .locale("es")
-            .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY") +
-          "  al  " +
-          moment(rangeFin)
-            .locale("es")
-            .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY");
+    const fechaTitulos =
+      moment(rangeInicio)
+        .locale("es")
+        .tz("America/Bogota")
+        .format("dddd, DD-MM-YYYY") +
+      "  al  " +
+      moment(rangeFin)
+        .locale("es")
+        .tz("America/Bogota")
+        .format("dddd, DD-MM-YYYY");
 
     setFechaHoy(fechaTitulos);
     fetchVentas(periodo);
@@ -118,8 +124,10 @@ function App() {
     console.log("🔄 Cambiando periodo a:", nuevoPeriodo);
 
     if (nuevoPeriodo === "ventasDia") {
+      
       setIsSwitchOn(false);
     } else {
+      
       setIsSwitchOn(true);
     }
 
@@ -127,6 +135,36 @@ function App() {
     setPeriodo(nuevoPeriodo);
     setFechaHoy(fechaTitulos);
     return nuevoPeriodo; // Si necesitas retornarlo para otra lógica
+  };
+
+  const handleSelectPeriodoAux = (periodoSeleccionado) => {
+    const fechaTitulos =
+    periodoSeleccionado === "ventasDia"
+        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
+        : moment(rangeInicio)
+            .locale("es")
+            .tz("America/Bogota")
+            .format("dddd, DD-MM-YYYY") +
+          " al " +
+          moment(rangeFin)
+            .locale("es")
+            .tz("America/Bogota")
+            .format("dddd, DD-MM-YYYY");
+
+    console.log("🔄 Cambiando periodo a:", periodoSeleccionado);
+
+    if (periodoSeleccionado === "ventasDia") {
+      setViewMode("ventasDia");
+      setIsSwitchOn(false);
+    } else {
+      setViewMode("ventasMes");
+      setIsSwitchOn(true);
+    }
+
+    fetchVentas(periodoSeleccionado);
+    setPeriodo(periodoSeleccionado);
+    setFechaHoy(fechaTitulos);
+    return periodoSeleccionado; // Si necesitas retornarlo para otra lógica
   };
 
   useEffect(() => {
@@ -172,7 +210,8 @@ function App() {
       );
       const data = await response.json();
       console.log("📤 Ventas:", data);
-      setVentas(data);
+      setVentas(data.results);
+      setVentasAtras(data.resultsAnioAtras);
     } catch (error) {
       console.error("Error al obtener ventas:", error);
     }
@@ -182,38 +221,39 @@ function App() {
 
   return (
     <div className="App">
-      <div>
-        <img src={logo} alt="Logo" className="logo" />
-        <div className="fecha_hoy_inicio_container">
-          {/*Fecha hoy*/}
-          <h2 className="fecha_hoy_inicio">{fechaHoy}</h2>
+      <div className="header-container">
+        {/* Logo y eslogan */}
+        <div className="logo-section">
+          <img src={logo} alt="Logo" className="logo" />
         </div>
 
-        <div className="select_mes_dia">
-          <div style={{ display: "flex", gap: "5px" }}>
+        {/* Sección de fecha y selector */}
+        <div className="date-section">
+          <div className="date-info">
+            <span>{fechaHoy}</span>
+          </div>
+
+          {/* Selector Mes/Día */}
+          <div className="view-selector">
             {isSwitchOn && (
               <CalendarMonthIcon
-                style={{ marginRight: "10px", cursor: "pointer" }}
+                style={{ marginRight: "15px", cursor: "pointer" }}
                 onClick={openModal}
               />
             )}
-            <div>Mes</div>
-            <Switch
-              {...label}
-              checked={periodo === "ventasDia"} // Controla el estado del Switch
-              onChange={handleSelectPeriodo}
-              color="default"
-            />
-            <div>dia</div>
+            <button
+              className={`selector-btn ${viewMode === "ventasMes" ? "active" : ""}`}
+              onClick={() => handleSelectPeriodoAux("ventasMes")}
+            >
+              Mes
+            </button>
+            <button
+              className={`selector-btn ${viewMode === "ventasDia" ? "active" : ""}`}
+              onClick={() => handleSelectPeriodoAux("ventasDia")}
+            >
+              Día
+            </button>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginLeft: "20px",
-            }}
-          ></div>
         </div>
       </div>
 
@@ -227,6 +267,7 @@ function App() {
             numeroPedidos={item.total_pedidos}
             maxValor={item.objetivo_ventas} // Puedes cambiar este valor si es necesario
             currencyFormat={formatCurrency} // Pasa tu función formatCurrency si es necesario
+            ventasAtras={ventasAtas.find((v) => v._id === item._id)}
           />
         ))}
       </div>
@@ -252,6 +293,7 @@ function App() {
           />
         </Modal>
       </>
+      <BottomNav />
     </div>
   );
 }
