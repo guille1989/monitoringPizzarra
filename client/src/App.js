@@ -80,10 +80,10 @@ function App() {
     },
   ]);
   const [rangeInicio, setRangeInicio] = useState(
-    moment().clone().startOf("month").format("YYYY-MM-DD HH:mm:ss")
+    moment().clone().startOf("month").format("YYYY-MM-DD")
   );
   const [rangeFin, setRangeFin] = useState(
-    moment().clone().endOf("month").format("YYYY-MM-DD HH:mm:ss")
+    moment().clone().endOf("month").format("YYYY-MM-DD")
   );
 
   const handleSelectRangoFechas = (ranges) => {
@@ -94,31 +94,31 @@ function App() {
         .format("YYYY-MM-DD HH:mm:ss")
     );
     setRangeFin(
-      moment(ranges.selection.endDate).tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss")
+      moment(ranges.selection.endDate).tz("America/Bogota").format("YYYY-MM-DD")
     );
     console.log("Rango seleccionado:", {
       startDate: moment(ranges.selection.startDate)
         .tz("America/Bogota")
-        .format("YYYY-MM-DD HH:mm:ss"),
+        .format("YYYY-MM-DD"),
       endDate: moment(ranges.selection.endDate)
         .tz("America/Bogota")
-        .format("YYYY-MM-DD HH:mm:ss"),
+        .format("YYYY-MM-DD"),
     });
   };
 
   const handleSelectPeriodoAux = (periodoSeleccionado) => {
     const fechaTitulos =
     periodoSeleccionado === "ventasDia"
-        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY HH:mm:ss")
+        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
         : moment(rangeInicio)
             .locale("es")
             .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY HH:mm:ss") +
+            .format("dddd, DD-MM-YYYY") +
           " al " +
           moment(rangeFin)
             .locale("es")
             .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY HH:mm:ss");
+            .format("dddd, DD-MM-YYYY");
 
     console.log("🔄 Cambiando periodo a:", periodoSeleccionado);
 
