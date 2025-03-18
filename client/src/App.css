@@ -2,7 +2,7 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #1f293d;
+  background-color: #1a2a44;
 }
 
 .App {
@@ -21,11 +21,8 @@ body, html {
 .container {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  max-width: 1200px;
+  width: 100%;
   gap: 20px;
-  margin-left: 10px;
-  margin-right: 10px;
   align-items: center;
 }
 
@@ -140,19 +137,19 @@ body, html {
 @media (max-width: 768px) {
   .box {
     height: 150px;
+    width: 90dvw; /* Ajusta el ancho al contenido */
+    margin: 0; /* Elimina el margen */
   }
   .box_venatas_text{
     font-size: 0.7em;
     opacity: 0.7;
   }
-
   .box_ventas_gauge{
     width: 45vw; /* 80% del ancho de la ventana */
     height: 12vh; /* 50% del alto de la ventana */
     overflow: hidden; /*"hidden" */
     margin-right: 3vw; /* Margen derecho del 5% */
   }
-
   .logo {
     width: 400px;
     height: 180px;
@@ -236,7 +233,7 @@ body, html {
 }
 
 .date-section {
-  width: 80%;
+  width: 80vw;
   background-color: #353d54; /* Fondo sutil para la sección de fecha */
   border-radius: 8px;
   padding: 20px;

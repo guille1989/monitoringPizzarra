@@ -37,10 +37,10 @@ const SalesBox = ({
               {numeroPedidos ? numeroPedidos : 0}
               {/* Indicador de comparación */}
               {numeroPedidos &&
-                ventasAtras.total_pedidos &&
+                ventasAtras?.total_pedidos &&
                 (() => {
                   const pedidosActuales = Number(numeroPedidos);
-                  const pedidosAnteriores = Number(ventasAtras.total_pedidos);
+                  const pedidosAnteriores = Number(ventasAtras?.total_pedidos);
                   const diferencia = pedidosActuales - pedidosAnteriores;
                   const porcentaje = (
                     (diferencia / pedidosAnteriores) *
@@ -74,8 +74,8 @@ const SalesBox = ({
               {/* Indicador de comparación */}
               {ventas &&
                 numeroPedidos &&
-                ventasAtras.total_ventas &&
-                ventasAtras.total_pedidos &&
+                ventasAtras?.total_ventas &&
+                ventasAtras?.total_pedidos &&
                 (() => {
                   const pedidosActuales = Number(ventas / numeroPedidos);
                   const pedidosAnteriores = Number(
@@ -111,7 +111,7 @@ const SalesBox = ({
 
               {/* Indicador de comparación */}
               {ventas &&
-                ventasAtras.total_ventas &&
+                ventasAtras?.total_ventas &&
                 (() => {
                   const ventasActual = Number(ventas);
                   const ventasAnterior = Number(ventasAtras.total_ventas);
