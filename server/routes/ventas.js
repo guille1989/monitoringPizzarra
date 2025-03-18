@@ -10,7 +10,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
   let periodo = req.params.periodo;
   let finicio = req.params.finicio;
   let ffin = req.params.ffin;
-  const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD");
+
+  const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
 
   // Calcular fechas hace un año
   let finicioHaceUnAño =
@@ -27,11 +28,19 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
     ffin.split("-")[1] +
     "-" +
     ffin.split("-")[2];
-    let fechaHoyAnioAtras = moment().tz("America/Bogota").subtract(1, "year").format("YYYY-MM-DD");
+  let fechaHoyAnioAtras = moment()
+    .tz("America/Bogota")
+    .subtract(1, "year")
+    .format("YYYY-MM-DD");
+
+  if (periodo === "ventasMes" && fechaHoy.split(" ")[0] < ffin) {
+    ffin = fechaHoy.split(" ")[0];
+    ffinHaceUnAño = fechaHoy.split(" ")[0].split("-")[0] - 1 + "-" + fechaHoy.split(" ")[0].split("-")[1] + "-" + fechaHoy.split(" ")[0].split("-")[2];
+  }
 
   try {
     // Pipeline para obtener las ventas del día y del mes
-  
+
     const pipelineVentasMes = [
       {
         $unwind: "$aux",
@@ -91,8 +100,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       {
         $match: {
           $and: [
-            { "aux.fecha_pedido": { $gte: fechaHoy } },
-            { "aux.fecha_pedido": { $lte: fechaHoy } },
+            { "aux.fecha_pedido": { $gte: fechaHoy.split(" ")[0] } },
+            { "aux.fecha_pedido": { $lte: fechaHoy.split(" ")[0] } },
           ],
         },
       },
@@ -119,6 +128,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
           $and: [
             { "aux.fecha_pedido": { $gte: fechaHoyAnioAtras } },
             { "aux.fecha_pedido": { $lte: fechaHoyAnioAtras } },
+            { "aux.hora_pedido": { $lt: fechaHoy.split(" ")[1] } },
           ],
         },
       },
@@ -141,9 +151,10 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
         ? await PedidoPizzarra.aggregate(pipelineVentasDia)
         : await PedidoPizzarra.aggregate(pipelineVentasMes);
 
-    const resultsAnioAtras = periodo === "ventasDia" ? await PedidoPizzarra.aggregate(pipelineVentasDiaAnioAtras) : await PedidoPizzarra.aggregate(
-      pipelineVentasMesAnioAtras
-    );
+    const resultsAnioAtras =
+      periodo === "ventasDia"
+        ? await PedidoPizzarra.aggregate(pipelineVentasDiaAnioAtras)
+        : await PedidoPizzarra.aggregate(pipelineVentasMesAnioAtras);
 
     const resultPuntos = await PuntosPizzarra.find();
     //Filtramos los objetivos de venta dia o mes dependiendo del parametro
@@ -200,7 +211,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       });
     }
 
-    res.json({results, resultsAnioAtras});
+    res.json({ results, resultsAnioAtras });
   } catch (error) {
     console.error("Error al obtener ventas:", error);
     res.status(500).json({ error: "Error interno del servidor" });

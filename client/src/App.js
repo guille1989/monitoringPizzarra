@@ -80,10 +80,10 @@ function App() {
     },
   ]);
   const [rangeInicio, setRangeInicio] = useState(
-    moment().clone().startOf("month").format("YYYY-MM-DD")
+    moment().clone().startOf("month").format("YYYY-MM-DD HH:mm:ss")
   );
   const [rangeFin, setRangeFin] = useState(
-    moment().clone().endOf("month").format("YYYY-MM-DD")
+    moment().clone().endOf("month").format("YYYY-MM-DD HH:mm:ss")
   );
 
   const handleSelectRangoFechas = (ranges) => {
@@ -91,65 +91,34 @@ function App() {
     setRangeInicio(
       moment(ranges.selection.startDate)
         .tz("America/Bogota")
-        .format("YYYY-MM-DD")
+        .format("YYYY-MM-DD HH:mm:ss")
     );
     setRangeFin(
-      moment(ranges.selection.endDate).tz("America/Bogota").format("YYYY-MM-DD")
+      moment(ranges.selection.endDate).tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss")
     );
     console.log("Rango seleccionado:", {
       startDate: moment(ranges.selection.startDate)
         .tz("America/Bogota")
-        .format("YYYY-MM-DD"),
+        .format("YYYY-MM-DD HH:mm:ss"),
       endDate: moment(ranges.selection.endDate)
         .tz("America/Bogota")
-        .format("YYYY-MM-DD"),
+        .format("YYYY-MM-DD HH:mm:ss"),
     });
-  };
-
-  const handleSelectPeriodo = (event) => {
-    const nuevoPeriodo = event.target.checked ? "ventasDia" : "ventasMes";
-    const fechaTitulos =
-      nuevoPeriodo === "ventasDia"
-        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
-        : moment(rangeInicio)
-            .locale("es")
-            .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY") +
-          " al " +
-          moment(rangeFin)
-            .locale("es")
-            .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY");
-
-    console.log("🔄 Cambiando periodo a:", nuevoPeriodo);
-
-    if (nuevoPeriodo === "ventasDia") {
-      
-      setIsSwitchOn(false);
-    } else {
-      
-      setIsSwitchOn(true);
-    }
-
-    fetchVentas(nuevoPeriodo);
-    setPeriodo(nuevoPeriodo);
-    setFechaHoy(fechaTitulos);
-    return nuevoPeriodo; // Si necesitas retornarlo para otra lógica
   };
 
   const handleSelectPeriodoAux = (periodoSeleccionado) => {
     const fechaTitulos =
     periodoSeleccionado === "ventasDia"
-        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
+        ? moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY HH:mm:ss")
         : moment(rangeInicio)
             .locale("es")
             .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY") +
+            .format("dddd, DD-MM-YYYY HH:mm:ss") +
           " al " +
           moment(rangeFin)
             .locale("es")
             .tz("America/Bogota")
-            .format("dddd, DD-MM-YYYY");
+            .format("dddd, DD-MM-YYYY HH:mm:ss");
 
     console.log("🔄 Cambiando periodo a:", periodoSeleccionado);
 
@@ -293,7 +262,6 @@ function App() {
           />
         </Modal>
       </>
-      <BottomNav />
     </div>
   );
 }

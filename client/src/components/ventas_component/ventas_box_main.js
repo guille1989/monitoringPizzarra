@@ -52,6 +52,7 @@ const SalesBox = ({
                     <span
                       style={{
                         color: esPositivo ? "green" : "red",
+                        opacity: "0.7",
                         marginLeft: "5px",
                         fontWeight: "bold",
                         fontSize: "0.8em",
@@ -91,6 +92,7 @@ const SalesBox = ({
                     <span
                       style={{
                         color: esPositivo ? "green" : "red",
+                        opacity: "0.7",
                         marginLeft: "5px",
                         fontWeight: "bold",
                         fontSize: "0.8em",
@@ -124,6 +126,7 @@ const SalesBox = ({
                     <span
                       style={{
                         color: esPositivo ? "green" : "red",
+                        opacity: "0.7",
                         marginLeft: "5px",
                         fontWeight: "bold",
                         fontSize: "0.8em",
