@@ -281,3 +281,28 @@ body, html {
 .selector-btn:hover {
   color: #ffffff;
 }
+
+.meta-indicator {
+  display: flex; /* Coloca los elementos en una fila */
+  align-items: center; /* Alinea verticalmente los elementos */
+  justify-content: space-evenly;
+  gap: 10px; /* Espaciado entre los elementos */
+  font-size: 14px; /* Ajusta el tamaño del texto si es necesario */
+  width: 100%;
+}
+
+.meta-indicator .label {
+  width: 70px;
+  font-weight: bold; /* Opcional: resalta la etiqueta */
+}
+
+.meta-indicator .value {
+  width: 80px; /* Ajusta el ancho del valor */
+  color: white; /* Opcional: color para el valor */
+}
+
+.meta-indicator .progress {
+  width: 100px; /* Ajusta el ancho de la barra de progreso */
+  color: white; /* Opcional: color para el progreso */
+  margin-right: 10px;
+}

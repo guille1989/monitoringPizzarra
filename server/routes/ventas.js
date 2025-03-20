@@ -11,6 +11,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
   let finicio = req.params.finicio;
   let ffin = req.params.ffin;
 
+  const fechaHoyAux = moment().tz("America/Bogota").format("YYYY-MM-DD");
   const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
 
   // Calcular fechas hace un año
@@ -35,7 +36,13 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
 
   if (periodo === "ventasMes" && fechaHoy.split(" ")[0] < ffin) {
     ffin = fechaHoy.split(" ")[0];
-    ffinHaceUnAño = fechaHoy.split(" ")[0].split("-")[0] - 1 + "-" + fechaHoy.split(" ")[0].split("-")[1] + "-" + fechaHoy.split(" ")[0].split("-")[2];
+    ffinHaceUnAño =
+      fechaHoy.split(" ")[0].split("-")[0] -
+      1 +
+      "-" +
+      fechaHoy.split(" ")[0].split("-")[1] +
+      "-" +
+      fechaHoy.split(" ")[0].split("-")[2];
   }
 
   try {
@@ -93,6 +100,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       },
     ];
 
+    console.log(fechaHoyAux);
     const pipelineVentasDia = [
       {
         $unwind: "$aux",
@@ -100,8 +108,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       {
         $match: {
           $and: [
-            { "aux.fecha_pedido": { $gte: fechaHoy.split(" ")[0] } },
-            { "aux.fecha_pedido": { $lte: fechaHoy.split(" ")[0] } },
+            { "aux.fecha_pedido": { $gte: fechaHoyAux } },
+            { "aux.fecha_pedido": { $lte: fechaHoyAux } },
           ],
         },
       },
@@ -150,6 +158,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       periodo === "ventasDia"
         ? await PedidoPizzarra.aggregate(pipelineVentasDia)
         : await PedidoPizzarra.aggregate(pipelineVentasMes);
+
+    console.log(results);
 
     const resultsAnioAtras =
       periodo === "ventasDia"

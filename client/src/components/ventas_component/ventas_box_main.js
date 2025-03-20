@@ -4,6 +4,8 @@ import VentasGauge from "./ventas_gauge"; // Asegúrate de importar VentasGauge 
 import Switch from "@mui/material/Switch";
 import Divider from "@mui/material/Divider";
 
+import { getGPTResponse } from "../../services/openaiService";
+
 const SalesBox = ({
   local,
   ventas,
@@ -13,6 +15,9 @@ const SalesBox = ({
   ventasAtras,
 }) => {
   // Función para formatear el valor como dinero
+  const [input, setInput] = useState("");
+  const [response, setResponse] = useState("");
+
   const formatCurrency = (value) => {
     return value.toLocaleString("es-CO", {
       style: "currency",
@@ -23,10 +28,68 @@ const SalesBox = ({
   };
   console.log(ventasAtras);
 
+  const handleSubmitGPT = async (e) => {
+    e.preventDefault();
+    const reply = await getGPTResponse(
+      input,
+      ventas,
+      numeroPedidos,
+      maxValor,
+      ventasAtras
+    );
+    setResponse(reply);
+  };
+
+  //
+  const renderPorcentaje = (valorActual, valorAnterior) => {
+    if (valorActual && valorAnterior) {
+      const actual = Number(valorActual);
+      const anterior = Number(valorAnterior);
+      const diferencia = actual - anterior;
+      const porcentaje = ((diferencia / anterior) * 100).toFixed(2);
+      const esPositivo = diferencia > 0;
+
+      return (
+        <span
+          style={{
+            color: esPositivo ? "green" : "red",
+            opacity: "0.7",
+            marginLeft: "5px",
+            fontWeight: "bold",
+            fontSize: "0.8em",
+          }}
+        >
+          {esPositivo ? "🟢" : "🔻"} {Math.abs(porcentaje)}%
+        </span>
+      );
+    }
+
+    return (
+      <span
+        style={{
+          display: "inline-block",
+          width: "8px",
+          height: "8px",
+          backgroundColor: "yellow",
+          borderRadius: "50%",
+          marginLeft: "10px",
+        }}
+      ></span>
+    );
+  };
+
   return (
     <div>
       <div className="box_title_main">
-        <div style={{ width: "70%" }}>{title || (local ? local : "-")}</div>
+        <div style={{ width: "50%" }}>{title || (local ? local : "-")}</div>
+
+        <div class="meta-indicator">
+          <span class="label">🎯 Meta:</span>
+          <span class="value">{formatCurrency(maxValor)}</span>
+          <span class="progress">
+            (Progreso: {Math.round((ventas * 100) / maxValor)}%)
+          </span>
+        </div>
       </div>
 
       <div className="box">
@@ -36,32 +99,7 @@ const SalesBox = ({
             <div>
               {numeroPedidos ? numeroPedidos : 0}
               {/* Indicador de comparación */}
-              {numeroPedidos &&
-                ventasAtras?.total_pedidos &&
-                (() => {
-                  const pedidosActuales = Number(numeroPedidos);
-                  const pedidosAnteriores = Number(ventasAtras?.total_pedidos);
-                  const diferencia = pedidosActuales - pedidosAnteriores;
-                  const porcentaje = (
-                    (diferencia / pedidosAnteriores) *
-                    100
-                  ).toFixed(2);
-                  const esPositivo = diferencia > 0;
-
-                  return (
-                    <span
-                      style={{
-                        color: esPositivo ? "green" : "red",
-                        opacity: "0.7",
-                        marginLeft: "5px",
-                        fontWeight: "bold",
-                        fontSize: "0.8em",
-                      }}
-                    >
-                      {esPositivo ? "↑" : "↓"} {Math.abs(porcentaje)}%
-                    </span>
-                  );
-                })()}
+              {renderPorcentaje(numeroPedidos, ventasAtras?.total_pedidos)}
             </div>
           </div>
           <div>
@@ -72,36 +110,12 @@ const SalesBox = ({
                 : 0}
 
               {/* Indicador de comparación */}
-              {ventas &&
-                numeroPedidos &&
-                ventasAtras?.total_ventas &&
-                ventasAtras?.total_pedidos &&
-                (() => {
-                  const pedidosActuales = Number(ventas / numeroPedidos);
-                  const pedidosAnteriores = Number(
-                    ventasAtras.total_ventas / ventasAtras.total_pedidos
-                  );
-                  const diferencia = pedidosActuales - pedidosAnteriores;
-                  const porcentaje = (
-                    (diferencia / pedidosAnteriores) *
-                    100
-                  ).toFixed(2);
-                  const esPositivo = diferencia > 0;
-
-                  return (
-                    <span
-                      style={{
-                        color: esPositivo ? "green" : "red",
-                        opacity: "0.7",
-                        marginLeft: "5px",
-                        fontWeight: "bold",
-                        fontSize: "0.8em",
-                      }}
-                    >
-                      {esPositivo ? "↑" : "↓"} {Math.abs(porcentaje)}%
-                    </span>
-                  );
-                })()}
+              {renderPorcentaje(
+                ventas && numeroPedidos ? ventas / numeroPedidos : null,
+                ventasAtras?.total_ventas && ventasAtras?.total_pedidos
+                  ? ventasAtras.total_ventas / ventasAtras.total_pedidos
+                  : null
+              )}
             </div>
           </div>
           <div>
@@ -110,32 +124,7 @@ const SalesBox = ({
               {ventas ? formatCurrency(ventas) : 0}
 
               {/* Indicador de comparación */}
-              {ventas &&
-                ventasAtras?.total_ventas &&
-                (() => {
-                  const ventasActual = Number(ventas);
-                  const ventasAnterior = Number(ventasAtras.total_ventas);
-                  const diferencia = ventasActual - ventasAnterior;
-                  const porcentaje = (
-                    (diferencia / ventasAnterior) *
-                    100
-                  ).toFixed(2);
-                  const esPositivo = diferencia > 0;
-
-                  return (
-                    <span
-                      style={{
-                        color: esPositivo ? "green" : "red",
-                        opacity: "0.7",
-                        marginLeft: "5px",
-                        fontWeight: "bold",
-                        fontSize: "0.8em",
-                      }}
-                    >
-                      {esPositivo ? "↑" : "↓"} {Math.abs(porcentaje)}%
-                    </span>
-                  );
-                })()}
+              {renderPorcentaje(ventas, ventasAtras?.total_ventas)}
             </div>
           </div>
         </div>
@@ -144,6 +133,23 @@ const SalesBox = ({
         </div>
       </div>
       <Divider />
+
+      <div>
+        <h1>Chat de Análisis de Ventas</h1>
+        <form onSubmit={handleSubmitGPT}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Escribe una pregunta sobre las ventas..."
+          />
+          <button type="submit">Enviar</button>
+        </form>
+        <div>
+          <h3>Respuesta del GPT-4o Mini:</h3>
+          <p>{response}</p>
+        </div>
+      </div>
     </div>
   );
 };
