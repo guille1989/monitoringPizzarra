@@ -91,7 +91,7 @@ const SalesBox = ({
           <span class="label">🎯 Meta:</span>
           <span class="value">{formatCurrency(maxValor)}</span>
           <span class="progress">
-            (Progreso: {Math.round((ventas * 100) / maxValor)}%)
+            ({Math.round((ventas * 100) / maxValor)}%)
           </span>
         </div>
       </div>
