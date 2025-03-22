@@ -286,9 +286,10 @@ body, html {
   display: flex; /* Coloca los elementos en una fila */
   align-items: center; /* Alinea verticalmente los elementos */
   justify-content: space-evenly;
-  gap: 10px; /* Espaciado entre los elementos */
+  gap: 0px; /* Espaciado entre los elementos */
   font-size: 14px; /* Ajusta el tamaño del texto si es necesario */
   width: 100%;
+  margin-left: 20px;
 }
 
 .meta-indicator .label {
@@ -305,4 +306,120 @@ body, html {
   width: 100px; /* Ajusta el ancho de la barra de progreso */
   color: white; /* Opcional: color para el progreso */
   margin-right: 10px;
+}
+
+/* Container for the chat section */
+.chat-container {
+  background-color: #2a3b5a; /* Slightly lighter dark blue for the container */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+  width: 90%;
+  max-width: 600px; /* Limit the width for better readability */
+}
+
+/* Styling the heading */
+.chat-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Styling the form */
+.chat-form {
+  display: flex;
+  gap: 10px; /* Space between input and button */
+  margin-bottom: 20px;
+}
+
+.assessment-icon {
+  position: absolute; /* Absolute position for the icon */
+  top: 15px; /* Ajusta la distancia desde la parte superior */
+  right: 20px; /* Ajusta la distancia desde la parte derecha */
+   /* Ajusta el tamaño del ícono si es necesario */
+  color: #4caf50; /* Cambia el color del ícono si lo deseas */
+  cursor: pointer;
+}
+
+/* Styling the input field */
+.chat-input {
+  flex: 1; /* Take up remaining space */
+  padding: 10px;
+  border: 1px solid #4a5b7a; /* Light border to match the theme */
+  border-radius: 5px;
+  background-color: #3a4b6a; /* Slightly lighter background for input */
+  color: #ffffff;
+  font-size: 16px;
+}
+
+/* Placeholder text styling */
+.chat-input::placeholder {
+  color: #a0a0a0; /* Light gray placeholder text */
+}
+
+/* Styling the button */
+.chat-button {
+  padding: 10px 20px;
+  background-color: #ff4d4d; /* Red color similar to the gauge chart */
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.chat-button:hover {
+  background-color: #e04343; /* Slightly darker red on hover */
+}
+
+/* Styling the response section */
+.response-section {
+  margin-top: 20px;
+}
+
+/* Styling the response heading */
+.response-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+/* Styling the response paragraph */
+.response-text {
+  background-color: #3a4b6a; /* Same background as input for consistency */
+  padding: 10px;
+  border-radius: 5px;
+  color: #d0d0d0; /* Slightly lighter text for the response */
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Fondo del modal de pantalla completa */
+.overlay-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Contenido del modal de pantalla completa */
+.modal-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #3a4b6a;
+  color: #ffffff;
+  padding: 2rem;
+  overflow: auto;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
 }

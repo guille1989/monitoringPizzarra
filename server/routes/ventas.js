@@ -6,13 +6,22 @@ const moment = require("moment-timezone");
 const pedidos_model = require("../models/pedidos_model");
 
 // Ruta GET para ejecutar la agregación
-rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
+rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
   let periodo = req.params.periodo;
   let finicio = req.params.finicio;
   let ffin = req.params.ffin;
+  let fhoy = req.params.fhoy.split(" ")[1]; // Solo la fecha
+  let fhoyParse = moment(fhoy, "DD-MM-YYYY").format("YYYY-MM-DD");
+
+  console.log("Periodo:", periodo);
+  console.log("Fecha inicio:", finicio);
+  console.log("Fecha fin:", ffin);
+  console.log("Fecha hoy:", fhoy);
+  console.log("Fecha hoy parse:", fhoyParse);
 
   const fechaHoyAux = moment().tz("America/Bogota").format("YYYY-MM-DD");
   const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
+  const horaHoy = fechaHoy.split(" ")[1];      // "HH:mm"
 
   // Calcular fechas hace un año
   let finicioHaceUnAño =
@@ -100,7 +109,6 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       },
     ];
 
-    console.log(fechaHoyAux);
     const pipelineVentasDia = [
       {
         $unwind: "$aux",
@@ -108,8 +116,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       {
         $match: {
           $and: [
-            { "aux.fecha_pedido": { $gte: fechaHoyAux } },
-            { "aux.fecha_pedido": { $lte: fechaHoyAux } },
+            { "aux.fecha_pedido": fhoyParse }
           ],
         },
       },
@@ -133,10 +140,18 @@ rute.get("/ventas/:periodo/:finicio/:ffin", async (req, res) => {
       },
       {
         $match: {
-          $and: [
-            { "aux.fecha_pedido": { $gte: fechaHoyAnioAtras } },
-            { "aux.fecha_pedido": { $lte: fechaHoyAnioAtras } },
-            { "aux.hora_pedido": { $lt: fechaHoy.split(" ")[1] } },
+          $or: [
+            // Caso 1: Es hoy, consideramos la hora
+            {
+              $and: [
+                { "aux.fecha_pedido": fhoyParse },
+                { "aux.hora_pedido": { $lt: horaHoy } },
+              ],
+            },
+            // Caso 2: No es hoy, solo fecha (ejemplo con fechaHoyAnioAtras exacta)
+            {
+              "aux.fecha_pedido": fechaHoyAnioAtras,
+            },
           ],
         },
       },

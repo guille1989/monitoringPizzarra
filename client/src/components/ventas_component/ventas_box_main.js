@@ -13,6 +13,8 @@ const SalesBox = ({
   maxValor,
   title,
   ventasAtras,
+  periodoDeDatos,
+  periodoDeDatosAux
 }) => {
   // Función para formatear el valor como dinero
   const [input, setInput] = useState("");
@@ -35,7 +37,9 @@ const SalesBox = ({
       ventas,
       numeroPedidos,
       maxValor,
-      ventasAtras
+      ventasAtras,
+      periodoDeDatos,
+      periodoDeDatosAux
     );
     setResponse(reply);
   };
@@ -133,23 +137,28 @@ const SalesBox = ({
         </div>
       </div>
       <Divider />
-
-      <div>
-        <h1>Chat de Análisis de Ventas</h1>
-        <form onSubmit={handleSubmitGPT}>
+      
+      {/*
+      <div class="chat-container">
+        <h1 class="chat-title">Chat de Análisis de Ventas</h1>
+        <form class="chat-form" onSubmit={handleSubmitGPT}>
           <input
             type="text"
+            class="chat-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe una pregunta sobre las ventas..."
           />
-          <button type="submit">Enviar</button>
+          <button type="submit" class="chat-button">
+            Enviar
+          </button>
         </form>
-        <div>
-          <h3>Respuesta del GPT-4o Mini:</h3>
-          <p>{response}</p>
+        <div class="response-section">
+          <h3 class="response-title">Respuesta del GPT-4o Mini:</h3>
+          <p class="response-text">{response}</p>
         </div>
       </div>
+      */}
     </div>
   );
 };
