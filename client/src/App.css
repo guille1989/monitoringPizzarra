@@ -293,17 +293,17 @@ body, html {
 }
 
 .meta-indicator .label {
-  width: 70px;
+  width: 30%;
   font-weight: bold; /* Opcional: resalta la etiqueta */
 }
 
 .meta-indicator .value {
-  width: 120px; /* Ajusta el ancho del valor */
+  width: 50%; /* Ajusta el ancho del valor */
   color: white; /* Opcional: color para el valor */
 }
 
 .meta-indicator .progress {
-  width: 100px; /* Ajusta el ancho de la barra de progreso */
+  width: 20%; /* Ajusta el ancho de la barra de progreso */
   color: white; /* Opcional: color para el progreso */
   margin-right: 10px;
 }
