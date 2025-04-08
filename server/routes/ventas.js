@@ -69,18 +69,25 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           ],
         },
       },
-      {
-        $group: {
-          _id: "$aux.local",
-          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
-          total_pedidos: { $sum: 1 },
-        },
+      { 
+        $group: { 
+          _id: "$aux.local", 
+          total_ventas: { 
+            $sum: { 
+              $add: [
+                { $ifNull: ["$aux.costo_pedido", 0] }, 
+                { $ifNull: ["$aux.domi_costo", 0] } 
+              ] 
+            } 
+          }, 
+          total_pedidos: { $sum: 1 } 
+        } 
       },
-      {
-        $sort: {
-          total_ventas: -1, // Orden descendente por total_ventas
-        },
-      },
+      { 
+        $sort: { 
+          total_ventas: -1 // Orden descendente (mayor a menor)
+        } 
+      }
     ];
 
     const pipelineVentasMesAnioAtras = [
@@ -95,18 +102,25 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           ],
         },
       },
-      {
-        $group: {
-          _id: "$aux.local",
-          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
-          total_pedidos: { $sum: 1 },
-        },
+      { 
+        $group: { 
+          _id: "$aux.local", 
+          total_ventas: { 
+            $sum: { 
+              $add: [
+                { $ifNull: ["$aux.costo_pedido", 0] }, 
+                { $ifNull: ["$aux.domi_costo", 0] } 
+              ] 
+            } 
+          }, 
+          total_pedidos: { $sum: 1 } 
+        } 
       },
-      {
-        $sort: {
-          total_ventas: -1, // Orden descendente por total_ventas
-        },
-      },
+      { 
+        $sort: { 
+          total_ventas: -1 // Orden descendente (mayor a menor)
+        } 
+      }
     ];
 
     const pipelineVentasDia = [
@@ -120,18 +134,25 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           ],
         },
       },
-      {
-        $group: {
-          _id: "$aux.local",
-          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
-          total_pedidos: { $sum: 1 },
-        },
+      { 
+        $group: { 
+          _id: "$aux.local", 
+          total_ventas: { 
+            $sum: { 
+              $add: [
+                { $ifNull: ["$aux.costo_pedido", 0] }, 
+                { $ifNull: ["$aux.domi_costo", 0] } 
+              ] 
+            } 
+          }, 
+          total_pedidos: { $sum: 1 } 
+        } 
       },
-      {
-        $sort: {
-          total_ventas: -1, // Orden descendente (mayor a menor)
-        },
-      },
+      { 
+        $sort: { 
+          total_ventas: -1 // Orden descendente (mayor a menor)
+        } 
+      }
     ];
 
     const pipelineVentasDiaAnioAtras = [
@@ -155,18 +176,25 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           ],
         },
       },
-      {
-        $group: {
-          _id: "$aux.local",
-          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
-          total_pedidos: { $sum: 1 },
-        },
+      { 
+        $group: { 
+          _id: "$aux.local", 
+          total_ventas: { 
+            $sum: { 
+              $add: [
+                { $ifNull: ["$aux.costo_pedido", 0] }, 
+                { $ifNull: ["$aux.domi_costo", 0] } 
+              ] 
+            } 
+          }, 
+          total_pedidos: { $sum: 1 } 
+        } 
       },
-      {
-        $sort: {
-          total_ventas: -1, // Orden descendente (mayor a menor)
-        },
-      },
+      { 
+        $sort: { 
+          total_ventas: -1 // Orden descendente (mayor a menor)
+        } 
+      }
     ];
 
     const results =
