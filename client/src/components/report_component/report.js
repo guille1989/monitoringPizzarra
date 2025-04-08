@@ -1,20 +1,43 @@
 import React from "react";
 import "./MonthlySalesReport.css";
 
-const MonthlySalesReport = ({ mes, anio, results, resultsAnioAtras, rangoFechas }) => {
+const MonthlySalesReport = ({
+  mes,
+  anio,
+  results,
+  resultsAnioAtras,
+  rangoFechas,
+}) => {
   const calcularVariacion = (actual, anterior) => {
     if (anterior === 0) return "N/A";
-    return ((actual - anterior) / anterior * 100).toFixed(1);
+    return (((actual - anterior) / anterior) * 100).toFixed(1);
   };
 
   const formatCurrency = (value) =>
-    value ? `$${value.toLocaleString("es-CO")}` : "$0";
+    value
+      ? `$${value.toLocaleString("es-CO", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        })}`
+      : "$0";
 
   const renderTable = (actual, anterior) => {
-    const cumplimiento = ((actual.total_ventas / actual.objetivo_ventas) * 100).toFixed(1);
-    const cumplimientoAnterior = ((anterior.total_ventas / anterior.objetivo_ventas) * 100).toFixed(1);
-    const variacionVentas = calcularVariacion(actual.total_ventas, anterior.total_ventas);
-    const variacionPedidos = calcularVariacion(actual.total_pedidos, anterior.total_pedidos);
+    const cumplimiento = (
+      (actual.total_ventas / actual.objetivo_ventas) *
+      100
+    ).toFixed(1);
+    const cumplimientoAnterior = (
+      (anterior.total_ventas / anterior.objetivo_ventas) *
+      100
+    ).toFixed(1);
+    const variacionVentas = calcularVariacion(
+      actual.total_ventas,
+      anterior.total_ventas
+    );
+    const variacionPedidos = calcularVariacion(
+      actual.total_pedidos,
+      anterior.total_pedidos
+    );
     const ticketActual = actual.total_ventas / actual.total_pedidos;
     const ticketAnterior = anterior.total_ventas / anterior.total_pedidos;
     const variacionTicket = calcularVariacion(ticketActual, ticketAnterior);
@@ -27,8 +50,12 @@ const MonthlySalesReport = ({ mes, anio, results, resultsAnioAtras, rangoFechas 
             <thead>
               <tr>
                 <th>Indicador</th>
-                <th>{mes} {anio}</th>
-                <th>{mes} {anio - 1}</th>
+                <th>
+                  {mes} {anio}
+                </th>
+                <th>
+                  Periodo 1 año atrás
+                </th>
                 <th>Variación</th>
               </tr>
             </thead>
@@ -59,12 +86,24 @@ const MonthlySalesReport = ({ mes, anio, results, resultsAnioAtras, rangoFechas 
               </tr>
               <tr>
                 <td>% Cumplimiento Meta</td>
-                <td>{cumplimiento}% <spam className={cumplimiento >= 100 ? "positive" : "negative"}>
-                  {cumplimiento >= 100 ? "✔" : "✘"}
-                </spam></td>
-                <td>{cumplimientoAnterior}% <spam className={cumplimientoAnterior >= 100 ? "positive" : "negative"}>
-                  {cumplimiento >= 100 ? "✔" : "✘"}
-                </spam></td>
+                <td>
+                  {cumplimiento}%{" "}
+                  <spam
+                    className={cumplimiento >= 100 ? "positive" : "negative"}
+                  >
+                    {cumplimiento >= 100 ? "✔" : "✘"}
+                  </spam>
+                </td>
+                <td>
+                  {cumplimientoAnterior}%{" "}
+                  <spam
+                    className={
+                      cumplimientoAnterior >= 100 ? "positive" : "negative"
+                    }
+                  >
+                    {cumplimiento >= 100 ? "✔" : "✘"}
+                  </spam>
+                </td>
                 <td className={cumplimiento >= 100 ? "positive" : "negative"}>
                   {cumplimiento >= 100 ? "✔" : "✘"}
                 </td>
@@ -78,9 +117,7 @@ const MonthlySalesReport = ({ mes, anio, results, resultsAnioAtras, rangoFechas 
 
   return (
     <div className="report-container">
-      <h1>
-        📊 Reporte de Ventas
-      </h1>
+      <h1>📊 Reporte de Ventas</h1>
 
       {rangoFechas && (
         <div className="date-range">

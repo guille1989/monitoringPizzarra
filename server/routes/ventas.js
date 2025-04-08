@@ -72,7 +72,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       {
         $group: {
           _id: "$aux.local",
-          total_ventas: { $sum: "$aux.costo_pedido" },
+          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
           total_pedidos: { $sum: 1 },
         },
       },
@@ -98,7 +98,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       {
         $group: {
           _id: "$aux.local",
-          total_ventas: { $sum: "$aux.costo_pedido" },
+          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
           total_pedidos: { $sum: 1 },
         },
       },
@@ -123,7 +123,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       {
         $group: {
           _id: "$aux.local",
-          total_ventas: { $sum: "$aux.costo_pedido" },
+          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
           total_pedidos: { $sum: 1 },
         },
       },
@@ -158,7 +158,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       {
         $group: {
           _id: "$aux.local",
-          total_ventas: { $sum: "$aux.costo_pedido" },
+          total_ventas: { $sum: { $add: ["$aux.costo_pedido", "$aux.domi_costo"] } },
           total_pedidos: { $sum: 1 },
         },
       },
