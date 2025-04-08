@@ -75,8 +75,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           total_ventas: { 
             $sum: { 
               $add: [
-                { $ifNull: ["$aux.costo_pedido", 0] }, 
-                { $ifNull: ["$aux.domi_costo", 0] } 
+                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
+                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
               ] 
             } 
           }, 
@@ -85,7 +85,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       },
       { 
         $sort: { 
-          total_ventas: -1 // Orden descendente (mayor a menor)
+          total_ventas: -1 
         } 
       }
     ];
@@ -108,8 +108,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           total_ventas: { 
             $sum: { 
               $add: [
-                { $ifNull: ["$aux.costo_pedido", 0] }, 
-                { $ifNull: ["$aux.domi_costo", 0] } 
+                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
+                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
               ] 
             } 
           }, 
@@ -118,7 +118,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       },
       { 
         $sort: { 
-          total_ventas: -1 // Orden descendente (mayor a menor)
+          total_ventas: -1 
         } 
       }
     ];
@@ -140,8 +140,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           total_ventas: { 
             $sum: { 
               $add: [
-                { $ifNull: ["$aux.costo_pedido", 0] }, 
-                { $ifNull: ["$aux.domi_costo", 0] } 
+                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
+                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
               ] 
             } 
           }, 
@@ -150,7 +150,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       },
       { 
         $sort: { 
-          total_ventas: -1 // Orden descendente (mayor a menor)
+          total_ventas: -1 
         } 
       }
     ];
@@ -182,8 +182,8 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
           total_ventas: { 
             $sum: { 
               $add: [
-                { $ifNull: ["$aux.costo_pedido", 0] }, 
-                { $ifNull: ["$aux.domi_costo", 0] } 
+                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
+                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
               ] 
             } 
           }, 
@@ -192,7 +192,7 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       },
       { 
         $sort: { 
-          total_ventas: -1 // Orden descendente (mayor a menor)
+          total_ventas: -1 
         } 
       }
     ];
