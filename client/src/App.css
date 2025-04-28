@@ -136,7 +136,9 @@ body, html {
 /* Ajuste para pantallas móviles */
 @media (max-width: 768px) {
   .box {
-    height: 150px;
+    height: auto;
+    padding-top: 10px; /* Espacio superior */
+    padding-bottom: 10px; /* Espacio inferior */
     width: 90dvw; /* Ajusta el ancho al contenido */
     margin: 0; /* Elimina el margen */
   }
