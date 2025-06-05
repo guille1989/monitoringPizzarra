@@ -13,12 +13,6 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
   let fhoy = req.params.fhoy.split(" ")[1]; // Solo la fecha
   let fhoyParse = moment(fhoy, "DD-MM-YYYY").format("YYYY-MM-DD");
 
-  console.log("Periodo:", periodo);
-  console.log("Fecha inicio:", finicio);
-  console.log("Fecha fin:", ffin);
-  console.log("Fecha hoy:", fhoy);
-  console.log("Fecha hoy parse:", fhoyParse);
-
   const fechaHoyAux = moment().tz("America/Bogota").format("YYYY-MM-DD");
   const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
   const horaHoy = fechaHoy.split(" ")[1];      // "HH:mm"
@@ -201,8 +195,6 @@ rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
       periodo === "ventasDia"
         ? await PedidoPizzarra.aggregate(pipelineVentasDia)
         : await PedidoPizzarra.aggregate(pipelineVentasMes);
-
-    console.log(results);
 
     const resultsAnioAtras =
       periodo === "ventasDia"

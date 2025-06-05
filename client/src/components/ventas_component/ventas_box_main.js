@@ -1,12 +1,10 @@
 // SalesBox.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import VentasGauge from "./ventas_gauge"; // Asegúrate de importar VentasGauge desde su ubicación correcta
-import Switch from "@mui/material/Switch";
 import moment from "moment";
 import Divider from "@mui/material/Divider";
 
 import { getGPTResponse } from "../../services/openaiService";
-import { set } from "date-fns";
 
 const SalesBox = ({
   local,

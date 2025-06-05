@@ -20,6 +20,7 @@ const client = new MongoClient(uri);
 //Rutas:
 const ventasRoutes = require("./routes/ventas");
 const puntosRoutes = require("./routes/puntos");
+const gastosRoutes = require("./routes/gastos");
 
 //Conectamos con Data Base
 mongose
@@ -114,6 +115,7 @@ io.on("connection", (socket) => {
 // Rutas
 app.use("/api", ventasRoutes);
 app.use("/api", puntosRoutes);
+app.use("/api", gastosRoutes);
 
 // Iniciar el servidor
 server.listen(port, () => {
