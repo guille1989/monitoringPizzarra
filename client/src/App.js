@@ -102,7 +102,7 @@ function App() {
       moment(date).locale("es").tz("America/Bogota").format("dddd DD-MM-YYYY")
     );
     console.log(
-      "Fecha seleccionada:",
+      "Fecha seleccionada setSelectedDate:",
       moment(date).locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
     );
   };
@@ -457,34 +457,6 @@ function App() {
           </Modal>
         </>
       )}
-
-      <Paper
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-        elevation={3}
-      >
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(event, newValue) => {
-            setValue(newValue);
-            console.log("Valor seleccionado:", newValue);
-            setViewMode(
-              newValue === 0
-                ? "ventasDia"
-                : newValue === 1
-                ? "gastos"
-                : "resumen"
-            );
-          }}
-        >
-          <BottomNavigationAction
-            label="Ventas"
-            icon={<MonetizationOnIcon />}
-          />
-          <BottomNavigationAction label="Gastos" icon={<PointOfSaleIcon />} />
-          <BottomNavigationAction label="Resumen" icon={<BalanceIcon />} />
-        </BottomNavigation>
-      </Paper>
     </div>
   );
 }

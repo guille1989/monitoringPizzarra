@@ -58,6 +58,7 @@ rute.get("/gastos/:periodo", async (req, res) => {
         },
       },
     ]);
+    console.log("Resultados de gastos:", results);
     //Parseamos el result para regresar el total de gastos
     const totalGastosPopayan =
       results.length !== 0
@@ -108,9 +109,12 @@ rute.get("/gastos/:periodo", async (req, res) => {
         fecha: item.FECHA_GASTO_fIJO,
         gastos: item.GASTOS,
         totalGasto: item.TOTAL_GASTO,
-        gastosParseados:item.LOCAL === "Pizzarra-Popayan-Centro" ? gastosParse : gastosParseCali,
+        gastosParseados:
+          item.LOCAL === "Pizzarra-Popayan-Centro"
+            ? gastosParse
+            : gastosParseCali,
       };
-    });    
+    });
     res.json({
       results,
       resultsAux,

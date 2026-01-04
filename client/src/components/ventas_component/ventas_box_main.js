@@ -105,81 +105,71 @@ const SalesBox = ({
         </div>
       </div>
 
-      <div className="box">
-        <div className="box_ventas">
-          <div>
-            <div className="box_venatas_text">Numero de pedidos:</div>
+      <div>
+        <div className="box">
+          <div className="box_ventas">
             <div>
-              {numeroPedidos ? numeroPedidos : 0}
-              {/* Indicador de comparación */}
-              {renderPorcentaje(numeroPedidos, ventasAtras?.total_pedidos)}
-            </div>
-          </div>
-          <div>
-            <div className="box_venatas_text">Ticket medio:</div>
-            <div>
-              {ventas && numeroPedidos
-                ? formatCurrency(ventas / numeroPedidos)
-                : 0}
-
-              {/* Indicador de comparación */}
-              {renderPorcentaje(
-                ventas && numeroPedidos ? ventas / numeroPedidos : null,
-                ventasAtras?.total_ventas && ventasAtras?.total_pedidos
-                  ? ventasAtras.total_ventas / ventasAtras.total_pedidos
-                  : null
-              )}
-            </div>
-          </div>
-          {periodoDeDatosAux === "ventasMes" ? (
-            <div>
-              <div className="box_venatas_text">Promedio ventas dia:</div>
+              <div className="box_venatas_text">Numero de pedidos:</div>
               <div>
-                {ventas && diffDias > 0
-                  ? formatCurrency(ventas / diffDias)
-                  : formatCurrency(0)}
+                {numeroPedidos ? numeroPedidos : 0}
                 {/* Indicador de comparación */}
-                {renderPorcentaje(ventas / diffDias, ventasAtras?.total_ventas / diffDias)}
+                {renderPorcentaje(numeroPedidos, ventasAtras?.total_pedidos)}
               </div>
             </div>
-          ) : null}
-          <div>
-            <div className="box_venatas_text">Ventas Totales:</div>
             <div>
-              {ventas ? formatCurrency(ventas) : 0}
+              <div className="box_venatas_text">Ticket medio:</div>
+              <div>
+                {ventas && numeroPedidos
+                  ? formatCurrency(ventas / numeroPedidos)
+                  : 0}
 
-              {/* Indicador de comparación */}
-              {renderPorcentaje(ventas, ventasAtras?.total_ventas)}
+                {/* Indicador de comparación */}
+                {renderPorcentaje(
+                  ventas && numeroPedidos ? ventas / numeroPedidos : null,
+                  ventasAtras?.total_ventas && ventasAtras?.total_pedidos
+                    ? ventasAtras.total_ventas / ventasAtras.total_pedidos
+                    : null
+                )}
+              </div>
+            </div>
+            {periodoDeDatosAux === "ventasMes" ? (
+              <div>
+                <div className="box_venatas_text">Promedio ventas dia:</div>
+                <div>
+                  {ventas && diffDias > 0
+                    ? formatCurrency(ventas / diffDias)
+                    : formatCurrency(0)}
+                  {/* Indicador de comparación */}
+                  {renderPorcentaje(
+                    ventas / diffDias,
+                    ventasAtras?.total_ventas / diffDias
+                  )}
+                </div>
+              </div>
+            ) : null}
+            <div>
+              <div className="box_venatas_text">Ventas Totales:</div>
+              <div>
+                {ventas ? formatCurrency(ventas) : 0}
+
+                {/* Indicador de comparación */}
+                {renderPorcentaje(ventas, ventasAtras?.total_ventas)}
+              </div>
             </div>
           </div>
+          <div className="box_ventas_gauge">
+            <VentasGauge valor={ventas ? ventas : 0} maxValor={maxValor} />
+          </div>
         </div>
-        <div className="box_ventas_gauge">
-          <VentasGauge valor={ventas ? ventas : 0} maxValor={maxValor} />
-        </div>
-      </div>
-      <Divider />
+        
+        {/* 
+        <div className="box_gastos">
+          <div className="box_gastos_text">Resumen de Gastos</div>
 
-      {/*
-      <div class="chat-container">
-        <h1 class="chat-title">Chat de Análisis de Ventas</h1>
-        <form class="chat-form" onSubmit={handleSubmitGPT}>
-          <input
-            type="text"
-            class="chat-input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Escribe una pregunta sobre las ventas..."
-          />
-          <button type="submit" class="chat-button">
-            Enviar
-          </button>
-        </form>
-        <div class="response-section">
-          <h3 class="response-title">Respuesta del GPT-4o Mini:</h3>
-          <p class="response-text">{response}</p>
+          <div className="box_venatas_text" style={{ marginLeft: '10px' }}>Total de gastos</div>
         </div>
+        */}
       </div>
-      */}
     </div>
   );
 };

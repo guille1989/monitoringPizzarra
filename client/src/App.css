@@ -47,6 +47,20 @@ body, html {
   margin-bottom: 10px;
 } 
 
+.box_gastos{
+  margin-top: 10px;
+  width: 50%; /* Ocupa todo el ancho disponible del container */
+  height: 200px;
+  display: flex;
+  flex-direction: column; /* Cambia a fila para alinear elementos horizontalmente */
+  justify-content: space-between; /* Separa el texto y el gauge */
+  align-items: left; /* Centra verticalmente */
+  gap: 10px; /* Espacio entre elementos */
+  color: white;
+  background-color: #353d54;
+  border-radius: 10px;
+}
+
 .box {
   width: 100%; /* Ocupa todo el ancho disponible del container */
   height: 400px;
@@ -142,6 +156,20 @@ body, html {
     width: 90dvw; /* Ajusta el ancho al contenido */
     margin: 0; /* Elimina el margen */
   }
+  .box_gastos{
+    margin-top: 10px;
+    height: auto;
+    padding-top: 10px; /* Espacio superior */
+    padding-bottom: 10px; /* Espacio inferior */
+    width: 50%; /* Ajusta el ancho al contenido */
+  }
+
+  .box_gastos_text{
+    font-size: 1em;
+    opacity: 0.7;
+    margin-left: 10px;
+  }
+
   .box_venatas_text{
     font-size: 0.7em;
     opacity: 0.7;

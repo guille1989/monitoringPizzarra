@@ -1,0 +1,36 @@
+.box_gastos {
+  height: 100%;
+  width: 100%;
+  margin-top: -10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.box_pie_gastos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.box_gastos_text {
+  width: 20%;
+  font-size: 1em;
+  opacity: 0.7;
+}
+
+.box_gastos_title_value {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+}
+
+.box_gastos_value {
+  font-size: 1.5em;
+  text-align: right;
+  opacity: 0.7;
+}

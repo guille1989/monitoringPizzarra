@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { PieChart } from "@mui/x-charts/PieChart";
 import { Chart } from "react-google-charts";
+import "./gastos_box_main.css"; // Asegúrate de tener el CSS correcto para los estilos
 
 const GastosBoxMain = ({
   local,
@@ -21,7 +21,7 @@ const GastosBoxMain = ({
       position: "labeled",
       textStyle: {
         color: "#fff",
-        fontSize: 12,
+        fontSize: 9,
       },
     },
     backgroundColor: "transparent",
@@ -39,11 +39,12 @@ const GastosBoxMain = ({
       <div className="box_title_main">
         <div style={{ width: "50%" }}>{title || (local ? local : "-")}</div>
       </div>
+
       <div className="box">
-        <div className="box_ventas">
-          <div>
-            <div className="box_venatas_text">Gasto Total:</div>
-            <div>
+        <div className="box_gastos">
+          <div className="box_gastos_title_value">
+            <div className="box_gastos_text">Gasto Total:</div>
+            <div className="box_gastos_value">
               {gastosTotales.toLocaleString("es-CO", {
                 style: "currency",
                 currency: "COP",
@@ -52,15 +53,16 @@ const GastosBoxMain = ({
               })}
             </div>
           </div>
-        </div>
-        <div>
-          <Chart
-            chartType="PieChart"
-            width="300px"
-            height="150px"
-            data={gastosParseados}
-            options={options}
-          />
+
+          <div className="box_pie_gastos">
+            <Chart
+              chartType="PieChart"
+              width="300px"
+              height="150px"
+              data={gastosParseados}
+              options={options}
+            />
+          </div>
         </div>
       </div>
     </div>
