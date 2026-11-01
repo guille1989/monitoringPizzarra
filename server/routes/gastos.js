@@ -8,7 +8,9 @@ require("moment/locale/es");
 rute.get("/gastos/:periodo", async (req, res) => {
   let periodoMes = req.params.periodo;
   // Parsear y formatear a "Junio-2025"
-  const fechaFormateada = moment(periodoMes, "dddd, DD-MM-YYYY")
+  const fecha = moment(periodoMes, ["YYYY-MM-DD", "dddd, DD-MM-YYYY", "dddd DD-MM-YYYY"], "es", true);
+  if (!fecha.isValid()) return res.status(400).json({ error: "La fecha no es válida." });
+  const fechaFormateada = fecha
     .locale("es")
     .format("MMMM-YYYY");
 
@@ -133,6 +135,7 @@ rute.get("/gastos/:periodo", async (req, res) => {
 const parseResult = (results) => {
   let gastosParse = [];
   gastosParse.push(["Descripción", "Monto"]); // Encabezados de la tabla
+  if (!results) return gastosParse;
   results.GASTOS.forEach((gasto) => {
     let obj = [];
     obj.push(gasto.descripcion, parseInt(gasto.monto));

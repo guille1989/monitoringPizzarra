@@ -1,8 +1,6 @@
 // SalesBox.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import VentasGauge from "./ventas_gauge"; // Asegúrate de importar VentasGauge desde su ubicación correcta
-import moment from "moment";
-import Divider from "@mui/material/Divider";
 
 import { getGPTResponse } from "../../services/openaiService";
 
@@ -15,11 +13,12 @@ const SalesBox = ({
   ventasAtras,
   periodoDeDatos,
   periodoDeDatosAux,
+  diasPeriodo = 1,
+  diasPeriodoAnterior = diasPeriodo,
 }) => {
   // Función para formatear el valor como dinero
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
-  const [diffDias, setDiffdias] = useState(null);
 
   const formatCurrency = (value) => {
     return value.toLocaleString("es-CO", {
@@ -29,15 +28,6 @@ const SalesBox = ({
       maximumFractionDigits: 0,
     });
   };
-  // Calcular la diferencia de días solo cuando cambie `periodoDeDatos`
-  useEffect(() => {
-    if (periodoDeDatos.includes(" al ")) {
-      const fechas = periodoDeDatos.split(" al ");
-      const diferenciaDias = moment(fechas[1]).diff(moment(fechas[0]), "days");
-      setDiffdias(diferenciaDias);
-      console.log(`Diferencia en días: ${diferenciaDias}`);
-    }
-  }, [periodoDeDatos]);
 
   const handleSubmitGPT = async (e) => {
     e.preventDefault();
@@ -96,11 +86,11 @@ const SalesBox = ({
       <div className="box_title_main">
         <div style={{ width: "50%" }}>{title || (local ? local : "-")}</div>
 
-        <div class="meta-indicator">
-          <span class="label">🎯 Meta:</span>
-          <span class="value">
+        <div className="meta-indicator">
+          <span className="label">🎯 Meta:</span>
+          <span className="value">
             {formatCurrency(maxValor)} Progreso:{" "}
-            {Math.round((ventas * 100) / maxValor)}%
+            {maxValor > 0 ? `${Math.round((ventas * 100) / maxValor)}%` : "N/A"}
           </span>
         </div>
       </div>
@@ -136,13 +126,13 @@ const SalesBox = ({
               <div>
                 <div className="box_venatas_text">Promedio ventas dia:</div>
                 <div>
-                  {ventas && diffDias > 0
-                    ? formatCurrency(ventas / diffDias)
+                  {ventas && diasPeriodo > 0
+                    ? formatCurrency(ventas / diasPeriodo)
                     : formatCurrency(0)}
                   {/* Indicador de comparación */}
                   {renderPorcentaje(
-                    ventas / diffDias,
-                    ventasAtras?.total_ventas / diffDias
+                    ventas / diasPeriodo,
+                    ventasAtras?.total_ventas / diasPeriodoAnterior
                   )}
                 </div>
               </div>

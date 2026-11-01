@@ -2,261 +2,53 @@ const Express = require("express");
 const rute = Express();
 const PedidoPizzarra = require("../models/pedidos_model");
 const PuntosPizzarra = require("../models/puntos_modelo");
-const moment = require("moment-timezone");
-const pedidos_model = require("../models/pedidos_model");
+const { prepararFechas } = require("../utils/fechasVentas");
 
-// Ruta GET para ejecutar la agregación
+function pipelineVentas(filtro) {
+  return [
+    { $unwind: "$aux" },
+    { $match: filtro },
+    {
+      $group: {
+        _id: "$aux.local",
+        total_ventas: {
+          $sum: {
+            $add: [
+              { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] },
+              { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] },
+            ],
+          },
+        },
+        total_pedidos: { $sum: 1 },
+      },
+    },
+    { $sort: { total_ventas: -1 } },
+  ];
+}
+
 rute.get("/ventas/:periodo/:finicio/:ffin/:fhoy", async (req, res) => {
-  let periodo = req.params.periodo;
-  let finicio = req.params.finicio;
-  let ffin = req.params.ffin;
-  let fhoy = req.params.fhoy.split(" ")[1]; // Solo la fecha
-  let fhoyParse = moment(fhoy, "DD-MM-YYYY").format("YYYY-MM-DD");
-
-  const fechaHoyAux = moment().tz("America/Bogota").format("YYYY-MM-DD");
-  const fechaHoy = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
-  const horaHoy = fechaHoy.split(" ")[1];      // "HH:mm"
-
-  // Calcular fechas hace un año
-  let finicioHaceUnAño =
-    parseInt(finicio.split("-")[0]) -
-    1 +
-    "-" +
-    finicio.split("-")[1] +
-    "-" +
-    finicio.split("-")[2];
-  let ffinHaceUnAño =
-    parseInt(ffin.split("-")[0]) -
-    1 +
-    "-" +
-    ffin.split("-")[1] +
-    "-" +
-    ffin.split("-")[2];
-  let fechaHoyAnioAtras = moment()
-    .tz("America/Bogota")
-    .subtract(1, "year")
-    .format("YYYY-MM-DD");
-
-  if (periodo === "ventasMes" && fechaHoy.split(" ")[0] < ffin) {
-    ffin = fechaHoy.split(" ")[0];
-    ffinHaceUnAño =
-      fechaHoy.split(" ")[0].split("-")[0] -
-      1 +
-      "-" +
-      fechaHoy.split(" ")[0].split("-")[1] +
-      "-" +
-      fechaHoy.split(" ")[0].split("-")[2];
+  let fechas;
+  try {
+    fechas = prepararFechas(req.params);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 
   try {
-    // Pipeline para obtener las ventas del día y del mes
-
-    const pipelineVentasMes = [
-      {
-        $unwind: "$aux",
-      },
-      {
-        $match: {
-          $and: [
-            { "aux.fecha_pedido": { $gte: finicio } },
-            { "aux.fecha_pedido": { $lte: ffin } },
-          ],
-        },
-      },
-      { 
-        $group: { 
-          _id: "$aux.local", 
-          total_ventas: { 
-            $sum: { 
-              $add: [
-                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
-                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
-              ] 
-            } 
-          }, 
-          total_pedidos: { $sum: 1 } 
-        } 
-      },
-      { 
-        $sort: { 
-          total_ventas: -1 
-        } 
-      }
-    ];
-
-    const pipelineVentasMesAnioAtras = [
-      {
-        $unwind: "$aux",
-      },
-      {
-        $match: {
-          $and: [
-            { "aux.fecha_pedido": { $gte: finicioHaceUnAño } },
-            { "aux.fecha_pedido": { $lte: ffinHaceUnAño } },
-          ],
-        },
-      },
-      { 
-        $group: { 
-          _id: "$aux.local", 
-          total_ventas: { 
-            $sum: { 
-              $add: [
-                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
-                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
-              ] 
-            } 
-          }, 
-          total_pedidos: { $sum: 1 } 
-        } 
-      },
-      { 
-        $sort: { 
-          total_ventas: -1 
-        } 
-      }
-    ];
-
-    const pipelineVentasDia = [
-      {
-        $unwind: "$aux",
-      },
-      {
-        $match: {
-          $and: [
-            { "aux.fecha_pedido": fhoyParse }
-          ],
-        },
-      },
-      { 
-        $group: { 
-          _id: "$aux.local", 
-          total_ventas: { 
-            $sum: { 
-              $add: [
-                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
-                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
-              ] 
-            } 
-          }, 
-          total_pedidos: { $sum: 1 } 
-        } 
-      },
-      { 
-        $sort: { 
-          total_ventas: -1 
-        } 
-      }
-    ];
-
-    const pipelineVentasDiaAnioAtras = [
-      {
-        $unwind: "$aux",
-      },
-      {
-        $match: {
-          $or: [
-            // Caso 1: Es hoy, consideramos la hora
-            {
-              $and: [
-                { "aux.fecha_pedido": fhoyParse },
-                { "aux.hora_pedido": { $lt: horaHoy } },
-              ],
-            },
-            // Caso 2: No es hoy, solo fecha (ejemplo con fechaHoyAnioAtras exacta)
-            {
-              "aux.fecha_pedido": fechaHoyAnioAtras,
-            },
-          ],
-        },
-      },
-      { 
-        $group: { 
-          _id: "$aux.local", 
-          total_ventas: { 
-            $sum: { 
-              $add: [
-                { $ifNull: [{ $toDouble: "$aux.costo_pedido" }, 0] }, 
-                { $ifNull: [{ $toDouble: "$aux.domi_costo" }, 0] } 
-              ] 
-            } 
-          }, 
-          total_pedidos: { $sum: 1 } 
-        } 
-      },
-      { 
-        $sort: { 
-          total_ventas: -1 
-        } 
-      }
-    ];
-
-    const results =
-      periodo === "ventasDia"
-        ? await PedidoPizzarra.aggregate(pipelineVentasDia)
-        : await PedidoPizzarra.aggregate(pipelineVentasMes);
-
-    const resultsAnioAtras =
-      periodo === "ventasDia"
-        ? await PedidoPizzarra.aggregate(pipelineVentasDiaAnioAtras)
-        : await PedidoPizzarra.aggregate(pipelineVentasMesAnioAtras);
-
-    const resultPuntos = await PuntosPizzarra.find();
-    //Filtramos los objetivos de venta dia o mes dependiendo del parametro
-
-    // Verificar que resultPuntos exista
-    if (!Array.isArray(resultPuntos) || resultPuntos.length === 0) {
-    } else {
-      resultsAnioAtras.forEach((element) => {
-        // Buscar el punto correspondiente
-        const objetivoVentas = resultPuntos.find(
-          (punto) => punto.local === element._id
-        );
-
-        if (objetivoVentas) {
-          // Determinar qué valor usar según el periodo
-          const campo =
-            periodo === "ventasDia"
-              ? "objetivo_venta_dia"
-              : "objetivo_venta_mes";
-          const valorCrudo = objetivoVentas[campo];
-
-          // Convertir a string primero, luego a número
-          const valorString = String(valorCrudo);
-          const valorNumerico = Number(valorString);
-          element.objetivo_ventas = isNaN(valorNumerico) ? 0 : valorNumerico;
-        } else {
-          console.warn(`No se encontró objetivo para ${element._id}`);
-          element.objetivo_ventas = 0; // Valor por defecto
-        }
-      });
-
-      results.forEach((element) => {
-        // Buscar el punto correspondiente
-        const objetivoVentas = resultPuntos.find(
-          (punto) => punto.local === element._id
-        );
-
-        if (objetivoVentas) {
-          // Determinar qué valor usar según el periodo
-          const campo =
-            periodo === "ventasDia"
-              ? "objetivo_venta_dia"
-              : "objetivo_venta_mes";
-          const valorCrudo = objetivoVentas[campo];
-
-          // Convertir a string primero, luego a número
-          const valorString = String(valorCrudo);
-          const valorNumerico = Number(valorString);
-          element.objetivo_ventas = isNaN(valorNumerico) ? 0 : valorNumerico;
-        } else {
-          console.warn(`No se encontró objetivo para ${element._id}`);
-          element.objetivo_ventas = 0; // Valor por defecto
-        }
-      });
+    const [results, resultsAnioAtras, puntos] = await Promise.all([
+      PedidoPizzarra.aggregate(pipelineVentas(fechas.actual)),
+      PedidoPizzarra.aggregate(pipelineVentas(fechas.anterior)),
+      PuntosPizzarra.find(),
+    ]);
+    const campo = req.params.periodo === "ventasDia"
+      ? "objetivo_venta_dia"
+      : "objetivo_venta_mes";
+    for (const element of [...results, ...resultsAnioAtras]) {
+      const punto = puntos.find((item) => item.local === element._id);
+      const objetivo = Number(punto?.[campo]);
+      element.objetivo_ventas = Number.isFinite(objetivo) ? objetivo : 0;
     }
-
-    res.json({ results, resultsAnioAtras });
+    res.json({ results, resultsAnioAtras, fechas: fechas.metadata });
   } catch (error) {
     console.error("Error al obtener ventas:", error);
     res.status(500).json({ error: "Error interno del servidor" });

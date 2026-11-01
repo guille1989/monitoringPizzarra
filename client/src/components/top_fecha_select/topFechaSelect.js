@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "../../App.css";
 import moment from "moment-timezone";
 import "moment/locale/es";
+import { formatearFecha } from "../../utils/fechas";
 
 const TopFechasHandling = ({
   Opcion,
@@ -9,8 +10,9 @@ const TopFechasHandling = ({
   fechaHoy,
   rangeInicio,
   rangeFin,
+  finConsultado,
 }) => {
-  const fechaFormateada = moment(fechaHoy, "dddd, DD-MM-YYYY")
+  const fechaFormateada = moment(fechaHoy, "YYYY-MM-DD", true)
     .locale("es")
     .format("MMMM-YYYY");
 
@@ -21,9 +23,9 @@ const TopFechasHandling = ({
   return (
     <div className="gauge-container">
       <div className="date-info">
-        <span>{ViewMode === "ventasDia" && fechaHoy}</span>
+        <span>{ViewMode === "ventasDia" && formatearFecha(fechaHoy)}</span>
         <span>
-          {ViewMode === "ventasMes" && rangeInicio + " al " + rangeFin}
+          {ViewMode === "ventasMes" && rangeInicio + " al " + (finConsultado || rangeFin)}
         </span>
         <span>{ViewMode === "gastos" && fechaFinal}</span>
       </div>

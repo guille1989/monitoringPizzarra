@@ -21,254 +21,163 @@ import GastosBoxMain from "./components/gastos_component/gastos_box_main";
 import MonthlySalesReport from "./components/report_component/report";
 import TopFechasHandling from "./components/top_fecha_select/topFechaSelect";
 
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import BalanceIcon from "@mui/icons-material/Balance";
-import Paper from "@mui/material/Paper";
+import { es } from "date-fns/locale";
+import {
+  hoyBogota, fechaDelCalendario, fechaParaCalendario, formatearFecha, rangoMes,
+} from "./utils/fechas";
 
 // Vincular el modal al elemento raíz para accesibilidad
 Modal.setAppElement("#root");
 
 function App() {
-  const [ventas, setVentas] = useState([]);
+  const [datosVentas, setDatosVentas] = useState(null);
+  const ventas = datosVentas?.results || [];
+  const ventasAtas = datosVentas?.resultsAnioAtras || [];
   const [gastos, setGastos] = useState([]);
-  const [ventasAtas, setVentasAtras] = useState([]);
-  const [periodo, setPeriodo] = useState("ventasDia"); // Estado inicial: "mes"
-  const [fechaHoy, setFechaHoy] = useState(
-    moment().locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
-  );
+  const [periodo, setPeriodo] = useState("ventasDia");
+  const [fechaHoy, setFechaHoy] = useState(hoyBogota);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsDiaOpen, setModalIsDiaOpen] = useState(false);
   const [modalIsMesGastoOpen, setModalIsMesGastoOpen] = useState(false);
   const [modalIsReportOpen, setModalIsReportOpen] = useState(false);
-  const [isSwitchOn, setIsSwitchOn] = useState(false); // Estado del Switch
-  const [viewMode, setViewMode] = useState("ventasDia");
-  const [value, setValue] = useState(0);
-  const [range, setRange] = useState([
-    {
-      startDate: new Date(), // Fecha inicial: hoy
-      endDate: new Date(), // Fecha final: hoy
-      key: "selection", // Clave requerida por la librería
-    },
-  ]);
-  const [rangeInicio, setRangeInicio] = useState(
-    moment().clone().startOf("month").format("YYYY-MM-DD")
+  const isSwitchOn = periodo === "ventasMes";
+  const viewMode = periodo;
+  const value = 0;
+  const [rangeInicio, setRangeInicio] = useState(() =>
+    moment(hoyBogota(), "YYYY-MM-DD").startOf("month").format("YYYY-MM-DD")
   );
-  const [rangeFin, setRangeFin] = useState(
-    moment().clone().endOf("month").format("YYYY-MM-DD")
+  const [rangeFin, setRangeFin] = useState(() =>
+    moment(hoyBogota(), "YYYY-MM-DD").endOf("month").format("YYYY-MM-DD")
   );
+  const [range, setRange] = useState(() => [rangoMes(fechaParaCalendario(hoyBogota()))]);
+  const [diaBorrador, setDiaBorrador] = useState(fechaHoy);
+  const [actualizacion, setActualizacion] = useState(0);
+  const [cargando, setCargando] = useState(true);
+  const [errorVentas, setErrorVentas] = useState("");
+  const servidor = process.env.REACT_APP_URL_PRODUCCION || "localhost:5001";
+  const apiUrl = /^https?:\/\//.test(servidor)
+    ? servidor.replace(/\/$/, "")
+    : `${window.location.protocol === "https:" ? "https" : "http"}://${servidor}`;
 
-  const openReportModal = () => {
-    setModalIsReportOpen(true);
+  const openReportModal = () => setModalIsReportOpen(true);
+  const closeReportModal = () => setModalIsReportOpen(false);
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setModalIsDiaOpen(false);
+    setModalIsMesGastoOpen(false);
   };
+  const closeDiaModal = closeModal;
 
   const openModal = () => {
-    if (value === 1) {
-      setModalIsMesGastoOpen(true);
-    }
+    setDiaBorrador(fechaHoy);
+    setRange([{
+      startDate: fechaParaCalendario(rangeInicio),
+      endDate: fechaParaCalendario(rangeFin),
+      key: "selection",
+    }]);
+    if (value === 1) setModalIsMesGastoOpen(true);
+    else if (isSwitchOn) setModalIsOpen(true);
+    else setModalIsDiaOpen(true);
+  };
 
-    if (isSwitchOn) {
-      // Solo abre si el Switch está activado
-      setModalIsOpen(true);
+  const aplicarFechas = () => {
+    if (modalIsOpen) {
+      setRangeInicio(fechaDelCalendario(range[0].startDate));
+      setRangeFin(fechaDelCalendario(range[0].endDate));
     } else {
-      setModalIsDiaOpen(true);
+      setFechaHoy(diaBorrador);
     }
+    closeModal();
   };
-
-  const closeDiaModal = () => {
-    fetchVentas(periodo);
-    fetchGastos(periodo);
-    setModalIsOpen(false);
-    setModalIsDiaOpen(false);
-    setModalIsMesGastoOpen(false);
-  };
-
-  const closeReportModal = () => {
-    setModalIsReportOpen(false);
-  };
-
-  const closeModal = () => {
-    fetchVentas(periodo);
-    fetchGastos(periodo);
-    setModalIsOpen(false);
-    setModalIsDiaOpen(false);
-    setModalIsMesGastoOpen(false);
-  };
-
   const setSelectedDate = (date) => {
-    setFechaHoy(
-      moment(date).locale("es").tz("America/Bogota").format("dddd DD-MM-YYYY")
-    );
-    console.log(
-      "Fecha seleccionada setSelectedDate:",
-      moment(date).locale("es").tz("America/Bogota").format("dddd, DD-MM-YYYY")
-    );
+    if (date) setDiaBorrador(fechaDelCalendario(date));
   };
+  const setSelectedMes = setSelectedDate;
+  const handleSelectRangoFechas = (ranges) => setRange([ranges.selection]);
+  const handleSelectPeriodoAux = (seleccion) => setPeriodo(seleccion);
 
-  const setSelectedMes = (date) => {
-    const fechaFormateada = moment(date).locale("es").format("MMMM-YYYY");
-
-    // Capitalizar la primera letra
-    const fechaFinal =
-      fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-
-    setFechaHoy(
-      moment(date).locale("es").tz("America/Bogota").format("dddd DD-MM-YYYY")
-    );
-
-    console.log("Fecha formateada:", fechaFinal);
-  };
-
-  const handleSelectRangoFechas = (ranges) => {
-    setRange([ranges.selection]);
-    setRangeInicio(
-      moment(ranges.selection.startDate)
-        .tz("America/Bogota")
-        .format("YYYY-MM-DD")
-    );
-    setRangeFin(
-      moment(ranges.selection.endDate).tz("America/Bogota").format("YYYY-MM-DD")
-    );
-    console.log("Rango seleccionado:", {
-      startDate: moment(ranges.selection.startDate)
-        .tz("America/Bogota")
-        .format("YYYY-MM-DD"),
-      endDate: moment(ranges.selection.endDate)
-        .tz("America/Bogota")
-        .format("YYYY-MM-DD"),
-    });
-  };
-
-  const handleSelectPeriodoAux = (periodoSeleccionado) => {
-    console.log("🔄 Cambiando periodo a:", periodoSeleccionado);
-
-    if (periodoSeleccionado === "ventasDia") {
-      setViewMode("ventasDia");
-      setIsSwitchOn(false);
-    } else {
-      setViewMode("ventasMes");
-      setIsSwitchOn(true);
-    }
-
-    fetchVentas(periodoSeleccionado);
-    setPeriodo(periodoSeleccionado);
-    return periodoSeleccionado; // Si necesitas retornarlo para otra lógica
-  };
+  // El socket solo avisa de cambios. La consulta usa siempre el filtro vigente.
+  useEffect(() => {
+    const socket = io(apiUrl, { transports: ["websocket"] });
+    socket.on("db_change", () => setActualizacion((version) => version + 1));
+    return () => socket.disconnect();
+  }, [apiUrl]);
 
   useEffect(() => {
-    fetchVentas(periodo);
-    fetchGastos(periodo);
-    const socket = io(`ws://${process.env.REACT_APP_URL_PRODUCCION}`, {
-      transports: ["websocket"],
-    });
-    socket.on("connect", () => {
-      console.log("✅ Conectado a WebSocket");
-    });
-    socket.on("db_change", (data) => {
-      console.log("📩 Cambio detectado en la DB:", data);
-      fetchVentas(periodo);
-      fetchGastos(periodo);
-    });
-    socket.on("db_status", (status) => {
-      console.log("📢 Estado de la DB:", status);
-    });
-    socket.on("disconnect", () => console.log("🔴 WebSocket desconectado"));
-    socket.on("connect_error", (err) =>
-      console.error("❌ Error en la conexión:", err)
-    );
-    return () => {
-      socket.disconnect();
+    const controller = new AbortController();
+    let vigente = true;
+    setCargando(true);
+    setErrorVentas("");
+    const cargar = async () => {
+      try {
+        const parametros = [periodo, rangeInicio, rangeFin, fechaHoy]
+          .map(encodeURIComponent).join("/");
+        const response = await fetch(`${apiUrl}/api/ventas/${parametros}`, {
+          signal: controller.signal,
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "No se pudieron consultar las ventas.");
+        if (!Array.isArray(data.results) || !Array.isArray(data.resultsAnioAtras) || !data.fechas) {
+          throw new Error("El servidor devolvió una respuesta de ventas incompleta.");
+        }
+        if (vigente) setDatosVentas(data);
+      } catch (error) {
+        if (vigente && error.name !== "AbortError") setErrorVentas(error.message);
+      } finally {
+        if (vigente) setCargando(false);
+      }
     };
-  }, []);
+    cargar();
+    return () => {
+      vigente = false;
+      controller.abort();
+    };
+  }, [apiUrl, periodo, rangeInicio, rangeFin, fechaHoy, actualizacion]);
 
-  // Función para formatear el valor como dinero
-  const formatCurrency = (value) => {
-    return value.toLocaleString("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    const cargar = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/gastos/${encodeURIComponent(fechaHoy)}`, {
+          signal: controller.signal,
+        });
+        const data = await response.json();
+        if (response.ok && Array.isArray(data.resultsAux) && !controller.signal.aborted) {
+          setGastos(data.resultsAux);
+        }
+      } catch (error) {
+        if (error.name !== "AbortError") console.error("Error al obtener gastos:", error);
+      }
+    };
+    cargar();
+    return () => controller.abort();
+  }, [apiUrl, fechaHoy, actualizacion]);
 
-  // Función para obtener los datos de ventas desde el backend
-  const fetchVentas = async (periodo) => {
-    try {
-      const response = await fetch(
-        `http://${process.env.REACT_APP_URL_PRODUCCION}/api/ventas/${periodo}/${rangeInicio}/${rangeFin}/${fechaHoy}`
-      );
-      const data = await response.json();
-      console.log("📤 Ventas:", data);
-      setVentas(data.results);
-      setVentasAtras(data.resultsAnioAtras);
-    } catch (error) {
-      console.error("Error al obtener ventas:", error);
-    }
-  };
+  const formatCurrency = (valor) => valor.toLocaleString("es-CO", {
+    style: "currency", currency: "COP", maximumFractionDigits: 0,
+  });
+  const fechasConsultadas = datosVentas?.fechas;
+  const periodoDeDatos = fechasConsultadas
+    ? (periodo === "ventasDia"
+      ? formatearFecha(fechasConsultadas.inicio)
+      : `${fechasConsultadas.inicio} al ${fechasConsultadas.fin}`)
+    : "";
 
-  const fetchGastos = async (periodo) => {
-    try {
-      const response = await fetch(
-        `http://${process.env.REACT_APP_URL_PRODUCCION}/api/gastos/${fechaHoy}`
-      );
-      const data = await response.json();
-      console.log("📤 Gastos:", data);
-      setGastos(data.resultsAux);
-    } catch (error) {
-      console.error("Error al obtener gastos:", error);
-    }
-  };
-
-  const renderCalendarToFilter = () => {
-    if (value === 0) {
-      return (
-        <div className="view-selector">
-          {isSwitchOn && (
-            <CalendarMonthIcon
-              style={{ marginRight: "15px", cursor: "pointer" }}
-              onClick={openModal}
-            />
-          )}
-
-          <button
-            className={`selector-btn ${
-              viewMode === "ventasMes" ? "active" : ""
-            }`}
-            onClick={() => handleSelectPeriodoAux("ventasMes")}
-          >
-            Mes
-          </button>
-          <button
-            className={`selector-btn ${
-              viewMode === "ventasDia" ? "active" : ""
-            }`}
-            onClick={() => handleSelectPeriodoAux("ventasDia")}
-          >
-            Día
-          </button>
-
-          {!isSwitchOn && (
-            <CalendarMonthIcon
-              style={{ marginLeft: "15px", cursor: "pointer" }}
-              onClick={openModal}
-            />
-          )}
-        </div>
-      );
-    } else if (value === 1) {
-      return (
-        <div className="view-selector">
-          <CalendarMonthIcon
-            style={{ marginLeft: "0px", cursor: "pointer" }}
-            onClick={openModal}
-          />
-        </div>
-      );
-    } else if (value === 2) {
-    }
-  };
+  const renderCalendarToFilter = () => (
+    <div className="view-selector">
+      <button className="calendar-trigger" aria-label="Filtrar fechas" onClick={openModal}>
+        <CalendarMonthIcon />
+      </button>
+      <button
+        className={`selector-btn ${viewMode === "ventasMes" ? "active" : ""}`}
+        onClick={() => handleSelectPeriodoAux("ventasMes")}
+      >Mes</button>
+      <button
+        className={`selector-btn ${viewMode === "ventasDia" ? "active" : ""}`}
+        onClick={() => handleSelectPeriodoAux("ventasDia")}
+      >Día</button>
+    </div>
+  );
 
   return (
     <div className="App">
@@ -280,11 +189,12 @@ function App() {
 
         {/* Sección de fecha y selector */}
         <div className="date-section">
-          <AssessmentOutlinedIcon
+          <button
+            aria-label="Ver informe"
+            className="assessment-icon calendar-trigger"
+            disabled={cargando || !!errorVentas || !datosVentas}
             onClick={openReportModal}
-            fontSize="large"
-            className="assessment-icon"
-          />
+          ><AssessmentOutlinedIcon fontSize="large" /></button>
 
           <TopFechasHandling
             Opcion={value}
@@ -292,6 +202,7 @@ function App() {
             fechaHoy={fechaHoy}
             rangeInicio={rangeInicio}
             rangeFin={rangeFin}
+            finConsultado={!cargando && !errorVentas ? fechasConsultadas?.fin : undefined}
           />
 
           {/* Selector Mes/Día */}
@@ -300,11 +211,18 @@ function App() {
       </div>
 
       <div className="container">
-        {value === 0 &&
+        {cargando && <p className="estado-ventas" role="status">Cargando ventas del periodo seleccionado…</p>}
+        {errorVentas && <div className="estado-ventas" role="alert">
+          <p>{errorVentas}</p>
+          <button onClick={() => setActualizacion((version) => version + 1)}>Reintentar</button>
+        </div>}
+        {!cargando && !errorVentas && ventas.length === 0 &&
+          <p className="estado-ventas">No hay ventas en el periodo seleccionado.</p>}
+        {value === 0 && !cargando && !errorVentas &&
           // Vista de Ventas
-          ventas.map((item, index) => (
+          ventas.map((item) => (
             <SalesBox
-              key={index}
+              key={item._id}
               datos={item}
               local={item._id}
               ventas={item.total_ventas}
@@ -312,14 +230,9 @@ function App() {
               maxValor={item.objetivo_ventas}
               currencyFormat={formatCurrency}
               ventasAtras={ventasAtas.find((v) => v._id === item._id)}
-              periodoDeDatos={
-                periodo === "ventasDia"
-                  ? moment()
-                      .locale("es")
-                      .tz("America/Bogota")
-                      .format("dddd, DD-MM-YYYY")
-                  : rangeInicio + " al " + rangeFin
-              }
+              periodoDeDatos={periodoDeDatos}
+              diasPeriodo={fechasConsultadas?.dias}
+              diasPeriodoAnterior={fechasConsultadas?.diasAnterior}
               periodoDeDatosAux={periodo}
             />
           ))}
@@ -355,10 +268,23 @@ function App() {
           overlayClassName="overlay"
         >
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <h2>Selecciona un rango</h2>
+            <h2>Selecciona un mes o rango</h2>
             <CloseIcon onClick={closeModal}>Cerrar</CloseIcon>
           </div>
+          <label htmlFor="mes-ventas">Mes completo</label>
+          <DatePicker
+            id="mes-ventas"
+            selected={range[0].startDate}
+            onChange={(date) => date && setRange([rangoMes(date)])}
+            showMonthYearPicker
+            dateFormat="MMMM yyyy"
+            locale={es}
+            maxDate={fechaParaCalendario(hoyBogota())}
+          />
           <DateRangePicker
+            locale={es}
+            maxDate={fechaParaCalendario(hoyBogota())}
+            shownDate={range[0].startDate}
             ranges={range}
             onChange={handleSelectRangoFechas}
             showSelectionPreview={true}
@@ -366,6 +292,10 @@ function App() {
             months={1} // Solo un mes para hacerlo más pequeño
             direction="horizontal"
           />
+          <div className="acciones-fechas">
+            <button onClick={closeModal}>Cancelar</button>
+            <button onClick={aplicarFechas}>Aplicar fechas</button>
+          </div>
         </Modal>
       </>
 
@@ -381,11 +311,17 @@ function App() {
             <CloseIcon onClick={closeDiaModal}>Cerrar</CloseIcon>
           </div>
           <DatePicker
-            selected={moment(fechaHoy, "dddd, DD-MM-YYYY", "es").toDate()}
+            selected={fechaParaCalendario(diaBorrador)}
+            locale={es}
+            maxDate={fechaParaCalendario(hoyBogota())}
             onChange={(date) => setSelectedDate(date)}
             inline // Muestra el calendario directamente sin input
-            monthsShown={1} // Muestra solo un mes
+            monthsShown={1}
           />
+          <div className="acciones-fechas">
+            <button onClick={closeModal}>Cancelar</button>
+            <button onClick={aplicarFechas}>Aplicar fechas</button>
+          </div>
         </Modal>
       </>
 
@@ -401,15 +337,18 @@ function App() {
             <CloseIcon onClick={closeDiaModal}>Cerrar</CloseIcon>
           </div>
           <DatePicker
-            selected={moment(fechaHoy, "dddd, DD-MM-YYYY", "es").toDate()}
+            selected={fechaParaCalendario(diaBorrador)}
+            locale={es}
+            maxDate={fechaParaCalendario(hoyBogota())}
             onChange={(date) => setSelectedMes(date)}
             inline // Muestra el calendario directamente sin input
-            showMonthYearPicker // <-- Esta es la clave
+            showMonthYearPicker
           />
+          <button onClick={aplicarFechas}>Aplicar fechas</button>
         </Modal>
       </>
 
-      {ventas && ventasAtas && (
+      {datosVentas && !cargando && !errorVentas && (
         <>
           <Modal
             isOpen={modalIsReportOpen}
@@ -434,21 +373,12 @@ function App() {
                 }}
               >
                 <MonthlySalesReport
-                  mes={
-                    periodo === "ventasMes"
-                      ? rangeFin.split("-")[1]
-                      : fechaHoy.split("-")[1]
-                  }
-                  anio={
-                    periodo === "ventasMes"
-                      ? rangeFin.split("-")[0]
-                      : fechaHoy.split("-")[0]
-                  }
-                  rangoFechas={
-                    periodo === "ventasMes"
-                      ? rangeInicio + " al " + rangeFin
-                      : fechaHoy
-                  }
+                  mes={fechasConsultadas?.fin.slice(5, 7)}
+                  anio={fechasConsultadas?.fin.slice(0, 4)}
+                  rangoFechas={periodoDeDatos}
+                  rangoAnterior={fechasConsultadas
+                    ? `${fechasConsultadas.inicioAnterior} al ${fechasConsultadas.finAnterior}`
+                    : ""}
                   results={ventas}
                   resultsAnioAtras={ventasAtas}
                 />

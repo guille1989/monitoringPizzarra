@@ -7,6 +7,7 @@ const MonthlySalesReport = ({
   results,
   resultsAnioAtras,
   rangoFechas,
+  rangoAnterior,
 }) => {
   const calcularVariacion = (actual, anterior) => {
     if (anterior === 0) return "N/A";
@@ -21,15 +22,16 @@ const MonthlySalesReport = ({
         })}`
       : "$0";
 
-  const renderTable = (actual, anterior) => {
-    const cumplimiento = (
+  const renderTable = (actual, historico) => {
+    const anterior = historico || { total_ventas: 0, total_pedidos: 0, objetivo_ventas: 0 };
+    const cumplimiento = actual.objetivo_ventas > 0 ? (
       (actual.total_ventas / actual.objetivo_ventas) *
       100
-    ).toFixed(1);
-    const cumplimientoAnterior = (
+    ).toFixed(1) : "N/A";
+    const cumplimientoAnterior = anterior.objetivo_ventas > 0 ? (
       (anterior.total_ventas / anterior.objetivo_ventas) *
       100
-    ).toFixed(1);
+    ).toFixed(1) : "N/A";
     const variacionVentas = calcularVariacion(
       actual.total_ventas,
       anterior.total_ventas
@@ -38,13 +40,14 @@ const MonthlySalesReport = ({
       actual.total_pedidos,
       anterior.total_pedidos
     );
-    const ticketActual = actual.total_ventas / actual.total_pedidos;
-    const ticketAnterior = anterior.total_ventas / anterior.total_pedidos;
+    const ticketActual = actual.total_pedidos > 0 ? actual.total_ventas / actual.total_pedidos : 0;
+    const ticketAnterior = anterior.total_pedidos > 0 ? anterior.total_ventas / anterior.total_pedidos : 0;
     const variacionTicket = calcularVariacion(ticketActual, ticketAnterior);
 
     return (
       <div key={actual._id} className="table-container">
         <h3>{actual._id}</h3>
+        {!historico && <p>Sin ventas registradas en el periodo del año anterior.</p>}
         <div className="table-wrapper">
           <table>
             <thead>
@@ -55,6 +58,7 @@ const MonthlySalesReport = ({
                 </th>
                 <th>
                   Periodo 1 año atrás
+                  {rangoAnterior && <div>{rangoAnterior}</div>}
                 </th>
                 <th>Variación</th>
               </tr>
@@ -65,7 +69,7 @@ const MonthlySalesReport = ({
                 <td>{formatCurrency(actual.total_ventas)}</td>
                 <td>{formatCurrency(anterior.total_ventas)}</td>
                 <td className={variacionVentas < 0 ? "negative" : "positive"}>
-                  {variacionVentas}%
+                  {variacionVentas === "N/A" ? "N/A" : `${variacionVentas}%`}
                 </td>
               </tr>
               <tr>
@@ -73,7 +77,7 @@ const MonthlySalesReport = ({
                 <td>{actual.total_pedidos}</td>
                 <td>{anterior.total_pedidos}</td>
                 <td className={variacionPedidos < 0 ? "negative" : "positive"}>
-                  {variacionPedidos}%
+                  {variacionPedidos === "N/A" ? "N/A" : `${variacionPedidos}%`}
                 </td>
               </tr>
               <tr>
@@ -81,28 +85,28 @@ const MonthlySalesReport = ({
                 <td>{formatCurrency(ticketActual)}</td>
                 <td>{formatCurrency(ticketAnterior)}</td>
                 <td className={variacionTicket < 0 ? "negative" : "positive"}>
-                  {variacionTicket}%
+                  {variacionTicket === "N/A" ? "N/A" : `${variacionTicket}%`}
                 </td>
               </tr>
               <tr>
                 <td>% Cumplimiento Meta</td>
                 <td>
-                  {cumplimiento}%{" "}
-                  <spam
+                  {cumplimiento === "N/A" ? "N/A" : `${cumplimiento}%`}{" "}
+                  <span
                     className={cumplimiento >= 100 ? "positive" : "negative"}
                   >
                     {cumplimiento >= 100 ? "✔" : "✘"}
-                  </spam>
+                  </span>
                 </td>
                 <td>
-                  {cumplimientoAnterior}%{" "}
-                  <spam
+                  {cumplimientoAnterior === "N/A" ? "N/A" : `${cumplimientoAnterior}%`}{" "}
+                  <span
                     className={
                       cumplimientoAnterior >= 100 ? "positive" : "negative"
                     }
                   >
-                    {cumplimiento >= 100 ? "✔" : "✘"}
-                  </spam>
+                    {cumplimientoAnterior >= 100 ? "✔" : "✘"}
+                  </span>
                 </td>
                 <td className={cumplimiento >= 100 ? "positive" : "negative"}>
                   {cumplimiento >= 100 ? "✔" : "✘"}

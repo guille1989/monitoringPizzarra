@@ -201,6 +201,40 @@ body, html {
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   outline: none;
+  max-width: calc(100vw - 60px);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.acciones-fechas {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.acciones-fechas button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.calendar-trigger {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.calendar-trigger:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.estado-ventas {
+  color: white;
+  text-align: center;
 }
 
 .overlay {
